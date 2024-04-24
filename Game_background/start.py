@@ -1,14 +1,22 @@
 import pygame
 import sys
+from PIL import Image
+import requests
+from io import BytesIO
+
+
+
+
 
 # ---------- Variables ----------
 SCREENWIDTH = 800
 SCREENHEIGHT = 1000
-FPS = 60
+FPS = 1
 
 
-# ---------- Images ----------
-start_image = pygame.image.load('/Users/laiq/Desktop/Computer Science/Studio Code/03_Github/ICS4u/Images/Monkey_Climb.png')
+
+
+# ---------- Start Button ----------
 
 # ---------- Class ----------
 class Game:
@@ -43,9 +51,21 @@ class Start:
     def __init__ (self, display, gameStateManager):
         self.display = display
         self.gameStateManager = gameStateManager
-    
+        
+        #IMAGE
+        self.image_url = 'https://raw.githubusercontent.com/Hamdhanl54/Group-Project/main/Images/Monkey_Climb.png'
+        response = requests.get(self.image_url)
+        self.image_data = response.content
+        pil_image = Image.open(BytesIO(self.image_data))
+        resized_pil_image = pil_image.resize((800, 1000))
+        resized_image_bytes = BytesIO()
+        resized_pil_image.save(resized_image_bytes, format = 'PNG')
+        resized_image_bytes.seek(0)
+        self.start_image = pygame.image.load(resized_image_bytes)
+
+
     def run(self):
-        self.display.blit(start_image)
+        self.display.blit(self.start_image, (0,0))#-------------------------------------------------------------
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RETURN]:
             self.gameStateManager.set_state('level')
@@ -57,7 +77,7 @@ class Level:
         self.gameStateManager = gameStateManager
     
     def run(self):
-        self.display.blit('red')
+        self.display.fill('red')
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RETURN]:
             self.gameStateManager.set_state('start')
