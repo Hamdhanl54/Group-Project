@@ -1,0 +1,1 @@
+print('ur black')
