@@ -6,6 +6,10 @@ SCREENWIDTH = 800
 SCREENHEIGHT = 1000
 FPS = 60
 
+
+# ---------- Images ----------
+start_image = pygame.image.load('/Users/laiq/Desktop/Computer Science/Studio Code/03_Github/ICS4u/Images/Monkey_Climb.png')
+
 # ---------- Class ----------
 class Game:
     def __init__(self):
@@ -41,7 +45,7 @@ class Start:
         self.gameStateManager = gameStateManager
     
     def run(self):
-        self.display.fill('Monkey_Climb.png')
+        self.display.blit(start_image)
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RETURN]:
             self.gameStateManager.set_state('level')
@@ -53,7 +57,7 @@ class Level:
         self.gameStateManager = gameStateManager
     
     def run(self):
-        self.display.fill('blue')
+        self.display.blit('red')
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RETURN]:
             self.gameStateManager.set_state('start')
