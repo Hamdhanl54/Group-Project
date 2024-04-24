@@ -41,7 +41,7 @@ class Start:
         self.gameStateManager = gameStateManager
     
     def run(self):
-        self.display.fill('red')
+        self.display.fill('Monkey_Climb.png')
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RETURN]:
             self.gameStateManager.set_state('level')
