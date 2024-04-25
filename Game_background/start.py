@@ -1,12 +1,8 @@
 import pygame
-from tkinter import *
 import sys
 from PIL import Image
 import requests
 from io import BytesIO
-
-
-
 
 
 # ---------- Variables ----------
@@ -14,10 +10,6 @@ SCREENWIDTH = 750
 SCREENHEIGHT = 900
 FPS = 1
 
-
-
-
-# ---------- Start Button ----------
 
 # ---------- Class ----------
 class Game:
@@ -53,17 +45,22 @@ class Start:
         self.display = display
         self.gameStateManager = gameStateManager
         
-        #IMAGE
-        self.image_url = 'https://raw.githubusercontent.com/Hamdhanl54/Group-Project/main/Images/Monkey_Climb.png'
-        response = requests.get(self.image_url)
-        self.image_data = response.content
-        pil_image = Image.open(BytesIO(self.image_data))
-        resized_pil_image = pil_image.resize((800, 1000))
-        resized_image_bytes = BytesIO()
-        resized_pil_image.save(resized_image_bytes, format = 'PNG')
-        resized_image_bytes.seek(0)
-        self.start_image = pygame.image.load(resized_image_bytes)
 
+
+        # -- IMAGE --
+        # Background
+        self.back_image_url = 'https://raw.githubusercontent.com/Hamdhanl54/Group-Project/main/Images/Monkey_Climb.png'
+        back_response = requests.get(self.back_image_url)
+        self.back_image_data = back_response.content
+        back_pil_image = Image.open(BytesIO(self.back_image_data))
+        back_resized_pil_image = back_pil_image.resize((800, 1000))
+        back_resized_image_bytes = BytesIO()
+        back_resized_pil_image.save(back_resized_image_bytes, format = 'PNG')
+        back_resized_image_bytes.seek(0)
+        self.back_start_image = pygame.image.load(back_resized_image_bytes)
+
+        # Monkey
+        self.monk_image_url = 
 
     def run(self):
         self.display.blit(self.start_image, (0,0))
