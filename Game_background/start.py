@@ -1,4 +1,5 @@
 import pygame
+from tkinter import *
 import sys
 from PIL import Image
 import requests
@@ -9,8 +10,8 @@ from io import BytesIO
 
 
 # ---------- Variables ----------
-SCREENWIDTH = 800
-SCREENHEIGHT = 1000
+SCREENWIDTH = 750
+SCREENHEIGHT = 900
 FPS = 1
 
 
@@ -65,7 +66,7 @@ class Start:
 
 
     def run(self):
-        self.display.blit(self.start_image, (0,0))#-------------------------------------------------------------
+        self.display.blit(self.start_image, (0,0))
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RETURN]:
             self.gameStateManager.set_state('level')
