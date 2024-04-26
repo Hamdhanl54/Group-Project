@@ -49,21 +49,15 @@ class Start:
 
         # -- IMAGE --
         # Background
-        self.back_image_url = 'https://raw.githubusercontent.com/Hamdhanl54/Group-Project/main/Images/Monkey_Climb.png'
-        back_response = requests.get(self.back_image_url)
-        self.back_image_data = back_response.content
-        back_pil_image = Image.open(BytesIO(self.back_image_data))
-        back_resized_pil_image = back_pil_image.resize((800, 1000))
-        back_resized_image_bytes = BytesIO()
-        back_resized_pil_image.save(back_resized_image_bytes, format = 'PNG')
-        back_resized_image_bytes.seek(0)
-        self.back_start_image = pygame.image.load(back_resized_image_bytes)
+        self.back_img = pygame.image.load('Images/Monkey_Climb.jpeg').convert_alpha()
+        self.back_size = (750, 900)
+        self.back_img = pygame.transform.scale(self.back_img, self.back_size)
 
         # Monkey
-        self.monk_image_url = 
+        #self.monk_image_url = 
 
     def run(self):
-        self.display.blit(self.start_image, (0,0))
+        self.display.blit(self.back_img, (0,0))
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RETURN]:
             self.gameStateManager.set_state('level')
