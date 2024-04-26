@@ -9,6 +9,38 @@ FPS = 1
 
 
 # ---------- Class ----------
+class Button:
+    def __init__(self, x, y, image, scale):
+        width = image.get_width()
+        height = image.get_height()
+        self.image = pygame.transform.scale(image, (int(width * scale), int(height * scale)))
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+        self.clicked = False
+    
+    def draw(self):
+        action = False
+
+        # Get mouse position
+        pos = pygame.mouse.get_pos()
+        
+        #cehck mouse over and clicked conditions
+        if self.rect.collidepoint(pos):
+            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                self.clicked = True
+                action = True
+
+        if pygame.mouse.get_pressed()[0] == 0:
+            self.clicked = False
+
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+
+        return action
+
+play_button = Button(50, 200, play_img, 0.2)
+quit_button = Button(200, 200, quit_img, 0.2)
+
+
 class Game:
     def __init__(self):
         pygame.init()
@@ -46,25 +78,12 @@ class Start:
 
         # -- IMAGE --
         # Background
-<<<<<<< HEAD
-        self.back_image_url = 'https://raw.githubusercontent.com/Hamdhanl54/Group-Project/main/Images/Monkey_Climb.jpeg'
-        back_response = requests.get(self.back_image_url)
-        self.back_image_data = back_response.content
-        back_pil_image = Image.open(BytesIO(self.back_image_data))
-        back_resized_pil_image = back_pil_image.resize((800, 1000))
-        back_resized_image_bytes = BytesIO()
-        back_resized_pil_image.save(back_resized_image_bytes, format = 'PNG')
-        back_resized_image_bytes.seek(0)
-        self.back_start_image = pygame.image.load(back_resized_image_bytes)
-
-=======
         self.back_img = pygame.image.load('Images/Monkey_Climb.jpeg').convert_alpha()
         self.back_size = (750, 900)
         self.back_img = pygame.transform.scale(self.back_img, self.back_size)
 
         # Monkey
         
->>>>>>> bb2e490112d8426bd4abe780c1c24d45e92b43cf
 
     def run(self):
         self.display.blit(self.back_img, (0,0))
