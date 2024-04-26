@@ -49,7 +49,7 @@ while run:
         print('Start')
 
     if quit_button.draw():
-        print('Quit')
+        run = False
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
