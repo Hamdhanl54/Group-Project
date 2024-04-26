@@ -49,7 +49,7 @@ class Start:
 
         # -- IMAGE --
         # Background
-        self.back_image_url = 'https://raw.githubusercontent.com/Hamdhanl54/Group-Project/main/Images/Monkey_Climb.png'
+        self.back_image_url = 'https://raw.githubusercontent.com/Hamdhanl54/Group-Project/main/Images/Monkey_Climb.jpeg'
         back_response = requests.get(self.back_image_url)
         self.back_image_data = back_response.content
         back_pil_image = Image.open(BytesIO(self.back_image_data))
@@ -59,8 +59,6 @@ class Start:
         back_resized_image_bytes.seek(0)
         self.back_start_image = pygame.image.load(back_resized_image_bytes)
 
-        # Monkey
-        self.monk_image_url = 
 
     def run(self):
         self.display.blit(self.start_image, (0,0))
