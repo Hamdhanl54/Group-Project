@@ -1,114 +1,142 @@
-import pygame
-import sys
+import pygame, sys
 
+pygame.init()
 
-# ---------- Variables ----------
-global SCREEN
-global SCREENWIDTH
-global SCREENHEIGHT
-global FPS
-SCREENWIDTH = 750
-SCREENHEIGHT = 900
-FPS = 1
+SCREEN_WIDTH = 750
+SCREEN_HEIGHT = 900
 
-# ----- Images -----
-start_img = pygame.image.load('/Users/laiq/Desktop/Computer Science/Studio Code/03_Github/ICS4u/Images/Start_Button.jpeg')
-start_size = (150,80)
-start_img =  pygame.transform.scale(start_img, start_size)
+SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Menu")
 
-exit_img = pygame.image.load('/Users/laiq/Desktop/Computer Science/Studio Code/03_Github/ICS4u/Images/Exit_Button.jpeg')
-exit_size = (150,80)
-exit_img = pygame.transform.scale(exit_img, exit_size)
+BACKGROUND = pygame.image.load('/Users/laiq/Desktop/Computer Science/Studio Code/03_Github/ICS4u/Images/Monkey_Climb.jpeg')
 
+BACKGROUND_SCALE = (750, 900)
+BACKGROUND = pygame.transform.scale(BACKGROUND, BACKGROUND_SCALE)
 
-# Background
-back_img = pygame.image.load('/Users/laiq/Desktop/Computer Science/Studio Code/03_Github/ICS4u/Images/Monkey_Climb.jpeg')
-back_size = (750, 900)
-back_img = pygame.transform.scale(back_img, back_size)
+PLAY_BUTTON_IMG = pygame.image.load("/Users/laiq/Desktop/Computer Science/Studio Code/03_Github/ICS4u/Images/Start_Button.jpeg")
+EXIT_BUTTON_IMG = pygame.image.load("/Users/laiq/Desktop/Computer Science/Studio Code/03_Github/ICS4u/Images/Exit_Button.jpeg")
 
-#Monkey
-monkey_img = pygame.image.load('/Users/laiq/Desktop/Computer Science/Studio Code/03_Github/ICS4u/Images/Back_Monkey.jpeg')
-monkey_size = (240, 240)
-monkey_img = pygame.transform.scale(monkey_img, monkey_size)
+def get_font(size): # Returns Press-Start-2P in the desired size
+    return pygame.font.Font("/Users/laiq/Desktop/Computer Science/Studio Code/03_Github/ICS4u/font.ttf", size)
 
-# ---------- Winndow ----------
-SCREEN = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
-pygame.display.set_caption('Monkey Climb')
+def play():
+    while True:
+        PLAY_MOUSE_POS = pygame.mouse.get_pos()
 
+        SCREEN.fill("black")
 
-# ---------- Initializing ----------
+        PLAY_TEXT = get_font(45).render("This is the PLAY screen.", True, "White")
+        PLAY_RECT = PLAY_TEXT.get_rect(center=(640, 260))
+        SCREEN.blit(PLAY_TEXT, PLAY_RECT)
 
+        PLAY_BACK = Button(image=None, pos=(640, 460), 
+                            text_input="BACK", font=get_font(75), base_color="White", hovering_color="Green")
 
-# ---------- Class ----------
-class Game:
-    def __init__(self):
-        pygame.init()
-      
-        self.clock = pygame.time.Clock()
+        PLAY_BACK.changeColor(PLAY_MOUSE_POS)
+        PLAY_BACK.update(SCREEN)
 
-        self.gameStateManager = GameStateManager('start')
-        self.start = Start(SCREEN, self.gameStateManager)
-        self.level = Level(SCREEN, self.gameStateManager)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if PLAY_BACK.checkForInput(PLAY_MOUSE_POS):
+                    main_menu()
 
-        self.states = {'start': self.start, 'level': self.level}
+        pygame.display.update()
+    
+def options():
+    while True:
+        OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
 
-    def run(self):
-        while True:
+        SCREEN.fill("white")
 
-            SCREEN.blit(back_img, (0,0))
-            SCREEN.blit(monkey_img, (285, 650))
+        OPTIONS_TEXT = get_font(45).render("This is the OPTIONS screen.", True, "Black")
+        OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(640, 260))
+        SCREEN.blit(OPTIONS_TEXT, OPTIONS_RECT)
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+        OPTIONS_BACK = Button(image=None, pos=(640, 460), 
+                            text_input="BACK", font=get_font(75), base_color="Black", hovering_color="Green")
+
+        OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_BACK.update(SCREEN)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
+                    main_menu()
+
+        pygame.display.update()
+
+def main_menu():
+    while True:
+        SCREEN.blit(BACKGROUND, (0,0))
+
+        MENU_MOUSE_POS = pygame.mouse.get_pos()
+
+        MENU_TEXT = get_font(100).render("MAIN MENU", True, "#b68f40")
+        MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
+
+        PLAY_BUTTON = Button(image=PLAY_BUTTON_IMG, pos=(120, 700), 
+                            text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+        
+        RULES_BUTTON = Button(image=pygame.image.load("/Users/laiq/Desktop/Computer Science/Studio Code/03_Github/ICS4u/Images/Back_Monkey.jpeg"), pos=(640, 400), 
+                            text_input="OPTIONS", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+        
+        QUIT_BUTTON = Button(image=EXIT_BUTTON_IMG, pos=(640, 550), 
+                            text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+
+        SCREEN.blit(MENU_TEXT, MENU_RECT)
+
+        for button in [PLAY_BUTTON, RULES_BUTTON, QUIT_BUTTON]:
+            button.changeColor(MENU_MOUSE_POS)
+            button.update(SCREEN)
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    play()
+                if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    options()
+                if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
                     sys.exit()
 
-                if event.type == pygame.KEYDOWN:
-                    self.gameStateManager.set_state('start')
-                
-                if event.type == pygame.KEYDOWN:
-                    self.gameStateManager.set_state('level')
+        pygame.display.update()
 
+class Button():
+	def __init__(self, image, pos, text_input, font, base_color, hovering_color):
+		self.image = image
+		self.x_pos = pos[0]
+		self.y_pos = pos[1]
+		self.font = font
+		self.base_color, self.hovering_color = base_color, hovering_color
+		self.text_input = text_input
+		self.text = self.font.render(self.text_input, True, self.base_color)
+		if self.image is None:
+			self.image = self.text
+		self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
+		self.text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
 
-            self.states[self.gameStateManager.get_state()].run()
+	def update(self, screen):
+		if self.image is not None:
+			screen.blit(self.image, self.rect)
+		screen.blit(self.text, self.text_rect)
 
-            pygame.display.update()
-            pygame.display.flip() 
-            self.clock.tick(FPS)
-            
+	def checkForInput(self, position):
+		if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
+			return True
+		return False
 
-class Start:
-    def __init__ (self, display, gameStateManager):
-        self.display = display
-        self.gameStateManager = gameStateManager
-
-    def run(self):
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_RETURN]:
-            self.gameStateManager.set_state('level')
-
-
-class Level:
-    def __init__ (self, display, gameStateManager):
-        self.display = display
-        self.gameStateManager = gameStateManager
-    
-    def run(self):
-        self.display.fill('red')
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_RETURN]:
-            self.gameStateManager.set_state('start')
-
-class GameStateManager:
-    def __init__ (self, currentState):
-        self.currentState = currentState
-    
-    def get_state(self):
-        return self.currentState
-    
-    def set_state(self, state):
-        self.currentState = state
-
-if __name__ == '__main__':
-    game = Game()
-    game.run()
+	def changeColor(self, position):
+		if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
+			self.text = self.font.render(self.text_input, True, self.hovering_color)
+		else:
+			self.text = self.font.render(self.text_input, True, self.base_color)
+main_menu()
