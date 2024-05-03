@@ -14,8 +14,8 @@ tile_size = 50
 
 
 #load images
-bg_img = pygame.image.load('Images/Monkey_Climb.jpeg')
-bg_img_resized = (750,900)
+bg_img = pygame.image.load('Images/Level_IMG.jpg')
+bg_img_resized = (1400,900)
 bg_img = pygame.transform.scale(bg_img, bg_img_resized)
 
 def draw_grid():
