@@ -13,20 +13,37 @@ pygame.display.set_caption('Platformer')
 
 # ------------------------------------------------------ VARIABLES ------------------------------------------------------
 TILE_SIZE = 50
+MAIN_MENU = True
 
 
 # ------------------------------------------------------ IMAGES ------------------------------------------------------
-#MENU
-#BUTTONS
+# ----- MENU -----
+MENU_IMG = pygame.image.load('Images/Monkey_Climb.jpeg')
+MIR = (1400, 900)
+MENU_IMG = pygame.transform.scale(MENU_IMG, MIR)
 
-#LEVEL
+# ----- BUTTONS -----
+START_BUTTON_IMG = pygame.image.load('Images/Buttons/Start_Button.jpeg')
+SBI_RESIZE = (200,100)
+START_BUTTON_IMG = pygame.transform.scale(START_BUTTON_IMG, SBI_RESIZE)
+
+EXIT_BUTTON_IMG = pygame.image.load('Images/Buttons/Exit_Button.jpeg')
+EBI_RESIZE = (200,100)
+EXIT_BUTTON_IMG = pygame.transform.scale(EXIT_BUTTON_IMG, EBI_RESIZE)
+
+# ----- LEVEL -----
 LVL_BG_IMG = pygame.image.load('Images/LEVEL_ASSETS/Level_IMG.jpg')
 LVL_BG_IMG_resized = (1400,900)
 LVL_BG_IMG = pygame.transform.scale(LVL_BG_IMG, LVL_BG_IMG_resized)
+
 GROUND_IMG = pygame.image.load('Images/LEVEL_ASSETS/Ground_asset.jpg')
+
 TRUNK_01_IMG = pygame.image.load('Images/LEVEL_ASSETS/Trunk_asset_01.jpg')
+
 TRUNK_02_IMG = pygame.image.load('Images/LEVEL_ASSETS/Trunk_asset_02.jpg')
+
 TRUNK_03_IMG = pygame.image.load('Images/LEVEL_ASSETS/Trunk_asset_03.jpg')
+
 CENTER_BRANCH_IMG = pygame.image.load('Images/LEVEL_ASSETS/Center_branch_asset.jpg')
 
 
@@ -96,9 +113,26 @@ class Button():
 		self.rect = self.image.get_rect()
 		self.rect.x = x
 		self.rect.y = y
+		self.clicked = False
 
 	def draw(self):
+		action = False
+		#get mouse position
+		pos = pygame.mouse.get_pos()
+		
+		#check mouseover and clicked conditions
+		if self.rect.collidepoint(pos):
+			if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+				action = True
+				self.clicked = True
+
+		if pygame.mouse.get_pressed()[0] == 0:
+			self.clicked = False
+				
+		#draw button
 		SCREEN.blit(self.image, self.rect)
+		return action
+
 
 
 # ------------------------------------------------------ INSTANCES ------------------------------------------------------
@@ -124,17 +158,34 @@ world_data = [
 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ]
 world = World(world_data)
+
 #MONKEY
 
 #BUTTON
-restart_button = Button(SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT // 2 + 100, restart_img)
+start_button = Button(SCREEN_WIDTH // 2 - 350, SCREEN_HEIGHT // 2, START_BUTTON_IMG)
+exit_button = Button(SCREEN_WIDTH // 2 + 150, SCREEN_HEIGHT // 2, EXIT_BUTTON_IMG)
+
+
+
+
+
 
 run = True
 while run:
 
-	SCREEN.blit(LVL_BG_IMG, (0, 0))
+	
+	
+	if MAIN_MENU == True:
+		SCREEN.blit(MENU_IMG, (0,0))
+		if exit_button.draw():
+			run = False
 
-	world.draw()
+		if start_button.draw():
+			MAIN_MENU = False
+	
+	else:
+		SCREEN.blit(LVL_BG_IMG, (0, 0))
+		world.draw()
 
 
 	for event in pygame.event.get():
