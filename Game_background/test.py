@@ -17,6 +17,7 @@ tile_size = 50
 bg_img = pygame.image.load('Images/Monkey_Climb.jpeg')
 bg_img_resized = (750,900)
 bg_img = pygame.transform.scale(bg_img, bg_img_resized)
+
 def draw_grid():
 	for line in range(0, 20):
 		pygame.draw.line(screen, (255, 255, 255), (0, line * tile_size), (screen_width, line * tile_size))
@@ -29,7 +30,8 @@ class World():
 		self.tile_list = []
 
 		#load images
-		log_img = pygame.image.load('Images/LOG.jpeg')
+		log_img = pygame.image.load('Images/TEST.jpeg')
+		
 
 		row_count = 0
 		for row in data:
@@ -93,6 +95,7 @@ while run:
 
 	world.draw()
 
+	draw_grid()
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
