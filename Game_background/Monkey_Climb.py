@@ -14,6 +14,9 @@ pygame.display.set_caption('Platformer')
 # ------------------------------------------------------ VARIABLES ------------------------------------------------------
 TILE_SIZE = 50
 MAIN_MENU = True
+TITLE = 'MONEY CLIMB'
+CLOCK = pygame.time.Clock()
+FPS = 60
 
 
 # ------------------------------------------------------ IMAGES ------------------------------------------------------
@@ -22,14 +25,16 @@ MENU_IMG = pygame.image.load('Images/Monkey_Climb.jpeg')
 MIR = (1400, 900)
 MENU_IMG = pygame.transform.scale(MENU_IMG, MIR)
 
+
 # ----- BUTTONS -----
 START_BUTTON_IMG = pygame.image.load('Images/Buttons/Start_Button.jpeg')
-SBI_RESIZE = (200,100)
+SBI_RESIZE = (200, 100)
 START_BUTTON_IMG = pygame.transform.scale(START_BUTTON_IMG, SBI_RESIZE)
 
 EXIT_BUTTON_IMG = pygame.image.load('Images/Buttons/Exit_Button.jpeg')
-EBI_RESIZE = (200,100)
+EBI_RESIZE = (200, 100)
 EXIT_BUTTON_IMG = pygame.transform.scale(EXIT_BUTTON_IMG, EBI_RESIZE)
+
 
 # ----- LEVEL -----
 LVL_BG_IMG = pygame.image.load('Images/LEVEL_ASSETS/Level_IMG.jpg')
@@ -46,15 +51,66 @@ TRUNK_03_IMG = pygame.image.load('Images/LEVEL_ASSETS/Trunk_asset_03.jpg')
 
 CENTER_BRANCH_IMG = pygame.image.load('Images/LEVEL_ASSETS/Center_branch_asset.jpg')
 
-
+'''
 def draw_grid():
 	for line in range(0, 29):
 		pygame.draw.line(SCREEN, (255, 255, 255), (0, line * TILE_SIZE), (SCREEN_WIDTH, line * TILE_SIZE))
 		pygame.draw.line(SCREEN, (255, 255, 255), (line * TILE_SIZE, 0), (line * TILE_SIZE, SCREEN_HEIGHT))
-
+'''
 
 
 # ------------------------------------------------------ CLASS ------------------------------------------------------
+class Player():
+	def __init__ (self, x, y):
+		img = pygame.image.load('Images/Monkey/back_monkey.jpg')
+		self.image = pygame.transform.scale(img, (40, 80))
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+		self.vel_y = 0
+		self.jumped = False
+
+	def update(self):
+		
+		dx = 0
+		dy = 0
+
+		#get keypresses
+		key = pygame.key.get_pressed()
+		if key[pygame.K_SPACE] and self.jumped == False:
+			self.vel_y = -15
+			self.jumped = True
+
+		if key[pygame.K_SPACE] == False:
+			self.jumped = False
+
+		if key[pygame.K_LEFT]:
+			dx -= 5
+
+		if key[pygame.K_RIGHT]:
+			dx += 5
+
+		#add gravity 
+		self.vel_y += 1
+		if self.vel_y > 10:
+			self.vel_y = 10
+		dy += self.vel_y
+		
+		#check for collision
+  
+		#update player coordinates
+		self.rect.x += dx
+		self.rect.y += dy
+
+		if self.rect.bottom > SCREEN_HEIGHT:
+			self.rect.bottom = SCREEN_HEIGHT
+			dy = 0
+
+		#draw player onto screen
+		SCREEN.blit(self.image, self.rect)
+
+
+
 class World():
 	def __init__(self, data):
 		self.tile_list = []
@@ -160,10 +216,11 @@ world_data = [
 world = World(world_data)
 
 #MONKEY
+player = Player(100, SCREEN_HEIGHT - 130)
 
 #BUTTON
-start_button = Button(SCREEN_WIDTH // 2 - 350, SCREEN_HEIGHT // 2, START_BUTTON_IMG)
-exit_button = Button(SCREEN_WIDTH // 2 + 150, SCREEN_HEIGHT // 2, EXIT_BUTTON_IMG)
+start_button = Button(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 150, START_BUTTON_IMG)
+exit_button = Button(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 300, EXIT_BUTTON_IMG)
 
 
 
@@ -173,20 +230,22 @@ exit_button = Button(SCREEN_WIDTH // 2 + 150, SCREEN_HEIGHT // 2, EXIT_BUTTON_IM
 run = True
 while run:
 
-	
+	CLOCK.tick(FPS)
 	
 	if MAIN_MENU == True:
-		SCREEN.blit(MENU_IMG, (0,0))
+		SCREEN.blit(MENU_IMG, (0, 0))
+
 		if exit_button.draw():
 			run = False
 
 		if start_button.draw():
 			MAIN_MENU = False
-	
+
 	else:
 		SCREEN.blit(LVL_BG_IMG, (0, 0))
 		world.draw()
-
+		player.update()
+		#draw_grid()
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
