@@ -1,6 +1,7 @@
 import pygame 
 import button
 import csv
+import pickle
 pygame.init()
 
 #game window
@@ -23,7 +24,7 @@ font = pygame.font.SysFont('Futura', 30)
 
 MAX_COLS = 28
 TILE_SIZE = 50
-TILE_TYPES = 6
+TILE_TYPES = 7
 level = 0
 current_tile = 0
 
@@ -48,6 +49,8 @@ for x in range(TILE_TYPES):
         img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE // 2))
     if x == 5:
         img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
+    if x == 6:
+        img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE // 2))
     img_list.append(img)
 
 save_img = pygame.image.load('Level_Editor/LEVEL_ASSETS/save_btn.png').convert_alpha()
@@ -123,18 +126,17 @@ while run:
     #save and load data
     if save_button.draw(SCREEN):
         #save level data
-        with open(f'level{level}_data.csv', 'w', newline = '') as csvfile:
-            writer =csv.writer(csvfile, delimiter = ',')
-            for row in world_data:
-                writer.writerow(row)
+        pickle_out = open(f'level{level}_data', 'wb')
+        pickle.dump(world_data, pickle_out)
+        pickle_out.close()
+        
 
     if load_button.draw(SCREEN):
         #load in level data
-        with open(f'level{level}_data.csv', newline = '') as csvfile:
-            reader =csv.reader(csvfile, delimiter = ',')
-            for x, row in enumerate(reader):
-                for y, tile in enumerate(row):
-                    world_data[x][y] = int(tile)
+        world_data = []
+        pickle_in = open(f'level{level}_data', 'rb')
+        world_data = pickle.load(pickle_in)
+        
 
 
     #draw tile panel and titles
@@ -183,7 +185,7 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-        if event.type == pygame.KEYDOWN and level <= 3:
+        if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
                 level += 1
             elif event.key == pygame.K_DOWN and level > 0:

@@ -51,12 +51,12 @@ TRUNK_03_IMG = pygame.image.load('Images/LEVEL_ASSETS/Trunk_asset_03.jpg')
 
 CENTER_BRANCH_IMG = pygame.image.load('Images/LEVEL_ASSETS/Center_branch_asset.jpg')
 
-'''
+
 def draw_grid():
 	for line in range(0, 29):
 		pygame.draw.line(SCREEN, (255, 255, 255), (0, line * TILE_SIZE), (SCREEN_WIDTH, line * TILE_SIZE))
 		pygame.draw.line(SCREEN, (255, 255, 255), (line * TILE_SIZE, 0), (line * TILE_SIZE, SCREEN_HEIGHT))
-'''
+
 
 
 # ------------------------------------------------------ CLASS ------------------------------------------------------
@@ -245,7 +245,7 @@ while run:
 		SCREEN.blit(LVL_BG_IMG, (0, 0))
 		world.draw()
 		player.update()
-		#draw_grid()
+		draw_grid()
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
