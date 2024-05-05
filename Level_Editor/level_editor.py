@@ -28,13 +28,13 @@ level = 0
 current_tile = 0
 
 #load images
-lvl_img = pygame.image.load('test/LEVEL_ASSETS/level_IMG.jpg')
+lvl_img = pygame.image.load('Level_Editor/LEVEL_ASSETS/level_IMG.jpg')
 r_lvl_img = (1400, 900)
 lvl_img = pygame.transform.scale(lvl_img, r_lvl_img)
 #store tiles in list
 img_list = []
 for x in range(TILE_TYPES):
-    img = pygame.image.load(f'test/LEVEL_ASSETS/{x}.png').convert_alpha()
+    img = pygame.image.load(f'Level_Editor/LEVEL_ASSETS/{x}.png').convert_alpha()
     
     if x == 0:
         img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
@@ -50,8 +50,8 @@ for x in range(TILE_TYPES):
         img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
     img_list.append(img)
 
-save_img = pygame.image.load('test/LEVEL_ASSETS/save_btn.png').convert_alpha()
-load_img = pygame.image.load('test/LEVEL_ASSETS/load_btn.png').convert_alpha()
+save_img = pygame.image.load('Level_Editor/LEVEL_ASSETS/save_btn.png').convert_alpha()
+load_img = pygame.image.load('Level_Editor/LEVEL_ASSETS/load_btn.png').convert_alpha()
 
 #create empty tile list
 world_data = []
