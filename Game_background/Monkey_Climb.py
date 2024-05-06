@@ -1,6 +1,7 @@
 # ------------------------------------------------------ IMPORTING ------------------------------------------------------
 import pygame
 from pygame.locals import *
+import pickle
 pygame.init()
 
 
@@ -51,45 +52,114 @@ TRUNK_03_IMG = pygame.image.load('Images/LEVEL_ASSETS/Trunk_asset_03.jpg')
 
 CENTER_BRANCH_IMG = pygame.image.load('Images/LEVEL_ASSETS/Center_branch_asset.jpg')
 
+LADDER_IMG = pygame.image.load('Images/LEVEL_ASSETS/Ladder_asset.png')
 
+FAKE_CENTER = pygame.image.load('Images/LEVEL_ASSETS/Center_branch_asset.jpg')
+
+'''
 def draw_grid():
 	for line in range(0, 29):
 		pygame.draw.line(SCREEN, (255, 255, 255), (0, line * TILE_SIZE), (SCREEN_WIDTH, line * TILE_SIZE))
 		pygame.draw.line(SCREEN, (255, 255, 255), (line * TILE_SIZE, 0), (line * TILE_SIZE, SCREEN_HEIGHT))
-
+'''
 
 
 # ------------------------------------------------------ CLASS ------------------------------------------------------
 class Player():
 	def __init__ (self, x, y):
-		img = pygame.image.load('Images/Monkey/back_monkey.jpg')
-		self.image = pygame.transform.scale(img, (40, 80))
+		#ideling animations
+		self.images_idel = []
+		self.idel_index = 0
+		self.idel_counter = 0
+		for num in range (1, 21):
+			img_idel = pygame.image.load(f'Images/Monkey/Ideling/idel_img{num}.png')
+			img_idel = pygame.transform.scale(img_idel, (60, 60))
+			self.images_idel.append(img_idel)
+		self.image = self.images_idel[self.idel_index]
+		
+        #left and right animations
+		self.images_right = []
+		self.images_left = []
+		self.index = 0
+		self.counter = 0
+		for num in range (1, 5):
+			img_right = pygame.image.load(f'Images/Monkey/Right&Left/right_img{num}.png')
+			img_right = pygame.transform.scale(img_right, (60, 60))
+			img_left = pygame.transform.flip(img_right, True, False)
+			self.images_right.append(img_right)
+			self.images_left.append(img_left)
+		self.image = self.images_right[self.index]
+		
 		self.rect = self.image.get_rect()
 		self.rect.x = x
 		self.rect.y = y
+		self.width = self.image.get_width()
+		self.height = self.image.get_height()
 		self.vel_y = 0
 		self.jumped = False
+		self.direction = 0
 
 	def update(self):
 		
 		dx = 0
 		dy = 0
+		idel_cooldown = 3
+		right_cooldown = 3
 
 		#get keypresses
 		key = pygame.key.get_pressed()
+		
+		if key[pygame.K_LEFT] == False and key[pygame.K_RIGHT] == False:
+			self.counter = 0
+			self.index = 0
+			if self.direction == 1:
+				self.image = self.images_right[self.index]
+			if self.direction == -1:
+				self.image = self.images_left[self.index]
+			
 		if key[pygame.K_SPACE] and self.jumped == False:
-			self.vel_y = -15
+			self.vel_y = -20
 			self.jumped = True
-
+	
 		if key[pygame.K_SPACE] == False:
 			self.jumped = False
+			
 
 		if key[pygame.K_LEFT]:
-			dx -= 5
+			dx -= 10
+			self.counter += 1
+			self.direction = -1
 
 		if key[pygame.K_RIGHT]:
-			dx += 5
+			dx += 10
+			self.counter += 1
+			self.direction = 1
+			
+		
 
+        #handle animation
+		#idel
+		self.idel_counter += 1
+		if self.idel_counter > idel_cooldown:
+			self.idel_counter = 0
+			self.idel_index += 1
+			if self.idel_index >= len(self.images_idel):
+				self.idel_index = 0
+			self.image = self.images_idel[self.idel_index]
+			
+        #right and left
+		self.counter += 1
+		if self.counter > right_cooldown:
+			self.counter = 0
+			self.index += 1
+			if self.index >= len(self.images_right):
+				self.index = 0
+			if self.direction == 1:
+				self.image = self.images_right[self.index]
+			if self.direction == -1:
+				self.image = self.images_left[self.index]
+			
+            
 		#add gravity 
 		self.vel_y += 1
 		if self.vel_y > 10:
@@ -97,6 +167,20 @@ class Player():
 		dy += self.vel_y
 		
 		#check for collision
+		for tile in world.tile_list:
+			#chech for collision in the x direction
+			if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
+				dx = 0
+			#check for collisions in the y direction
+			if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+				#check if below the ground i.e. jumping
+				if self.vel_y < 0:
+					dy = tile[1].bottom - self.rect.top
+					self.vel_y = 78
+				#check if above the ground i.e. falling
+				elif self.vel_y >= 0:
+					dy = tile[1].top - self.rect.bottom
+
   
 		#update player coordinates
 		self.rect.x += dx
@@ -108,19 +192,28 @@ class Player():
 
 		#draw player onto screen
 		SCREEN.blit(self.image, self.rect)
+		pygame.draw.rect(SCREEN, (255, 255, 255), self.rect, 2)
 
 
 
 class World():
 	def __init__(self, data):
 		self.tile_list = []
+		self.fake_center_platfroms = []
 
 		row_count = 0
 		for row in data:
 			col_count = 0
 			for tile in row:
-				if tile == 1:
+				if tile == 0:
 					img = pygame.transform.scale(GROUND_IMG, (TILE_SIZE, TILE_SIZE))
+					img_rect = img.get_rect()
+					img_rect.x = col_count * TILE_SIZE
+					img_rect.y = row_count * TILE_SIZE
+					tile = (img, img_rect)
+					self.tile_list.append(tile)
+				if tile == 1:
+					img = pygame.transform.scale(TRUNK_02_IMG, (TILE_SIZE, TILE_SIZE))
 					img_rect = img.get_rect()
 					img_rect.x = col_count * TILE_SIZE
 					img_rect.y = row_count * TILE_SIZE
@@ -134,34 +227,42 @@ class World():
 					tile = (img, img_rect)
 					self.tile_list.append(tile)
 				if tile == 3:
-					img = pygame.transform.scale(TRUNK_02_IMG, (TILE_SIZE, TILE_SIZE))
-					img_rect = img.get_rect()
-					img_rect.x = col_count * TILE_SIZE
-					img_rect.y = row_count * TILE_SIZE
-					tile = (img, img_rect)
-					self.tile_list.append(tile)
-				if tile == 4:
 					img = pygame.transform.scale(TRUNK_03_IMG, (TILE_SIZE, TILE_SIZE))
 					img_rect = img.get_rect()
 					img_rect.x = col_count * TILE_SIZE
 					img_rect.y = row_count * TILE_SIZE
 					tile = (img, img_rect)
 					self.tile_list.append(tile)
-				if tile == 5:
+				if tile == 4:
 					img = pygame.transform.scale(CENTER_BRANCH_IMG, (TILE_SIZE, TILE_SIZE // 2))
 					img_rect = img.get_rect()
 					img_rect.x = col_count * TILE_SIZE
 					img_rect.y = row_count * TILE_SIZE
 					tile = (img, img_rect)
 					self.tile_list.append(tile)
-				
+				if tile == 5:
+					img = pygame.transform.scale(LADDER_IMG, (TILE_SIZE, TILE_SIZE))
+					img_rect = img.get_rect()
+					img_rect.x = col_count * TILE_SIZE
+					img_rect.y = row_count * TILE_SIZE
+					tile = (img, img_rect)
 					self.tile_list.append(tile)
+				if tile == 6:
+					img = pygame.transform.scale(FAKE_CENTER, (TILE_SIZE, TILE_SIZE // 2))
+					img_rect = img.get_rect()
+					img_rect.x = col_count * TILE_SIZE
+					img_rect.y = row_count * TILE_SIZE
+					self.fake_center_platfroms.append((img, img_rect))
+
 				col_count += 1
 			row_count += 1
 
 	def draw(self):
 		for tile in self.tile_list:
 			SCREEN.blit(tile[0], tile[1])
+		for platform in self.fake_center_platfroms:
+			SCREEN.blit(platform[0], platform[1])
+			#pygame.draw.rect(SCREEN, (255, 255, 255), tile[1], 2)
 
 class Button():
 	def __init__ (self, x, y, image):
@@ -193,26 +294,9 @@ class Button():
 
 # ------------------------------------------------------ INSTANCES ------------------------------------------------------
 #WORLD
-world_data = [
-[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-[3, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 4],
-[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 3],
-[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-[2, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-[3, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-[3, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 3],
-[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-]
+#load in level data
+pickle_in = open('level3_data', 'rb')
+world_data = pickle.load(pickle_in)
 world = World(world_data)
 
 #MONKEY
@@ -245,7 +329,7 @@ while run:
 		SCREEN.blit(LVL_BG_IMG, (0, 0))
 		world.draw()
 		player.update()
-		draw_grid()
+		#draw_grid()
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
