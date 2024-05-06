@@ -52,6 +52,10 @@ TRUNK_03_IMG = pygame.image.load('Images/LEVEL_ASSETS/Trunk_asset_03.jpg')
 
 CENTER_BRANCH_IMG = pygame.image.load('Images/LEVEL_ASSETS/Center_branch_asset.jpg')
 
+LADDER_IMG = pygame.image.load('Images/LEVEL_ASSETS/Ladder_asset.png')
+
+FAKE_CENTER = pygame.image.load('Images/LEVEL_ASSETS/Center_branch_asset.jpg')
+
 '''
 def draw_grid():
 	for line in range(0, 29):
@@ -200,8 +204,15 @@ class World():
 		for row in data:
 			col_count = 0
 			for tile in row:
-				if tile == 1:
+				if tile == 0:
 					img = pygame.transform.scale(GROUND_IMG, (TILE_SIZE, TILE_SIZE))
+					img_rect = img.get_rect()
+					img_rect.x = col_count * TILE_SIZE
+					img_rect.y = row_count * TILE_SIZE
+					tile = (img, img_rect)
+					self.tile_list.append(tile)
+				if tile == 1:
+					img = pygame.transform.scale(TRUNK_02_IMG, (TILE_SIZE, TILE_SIZE))
 					img_rect = img.get_rect()
 					img_rect.x = col_count * TILE_SIZE
 					img_rect.y = row_count * TILE_SIZE
@@ -215,35 +226,42 @@ class World():
 					tile = (img, img_rect)
 					self.tile_list.append(tile)
 				if tile == 3:
-					img = pygame.transform.scale(TRUNK_02_IMG, (TILE_SIZE, TILE_SIZE))
-					img_rect = img.get_rect()
-					img_rect.x = col_count * TILE_SIZE
-					img_rect.y = row_count * TILE_SIZE
-					tile = (img, img_rect)
-					self.tile_list.append(tile)
-				if tile == 4:
 					img = pygame.transform.scale(TRUNK_03_IMG, (TILE_SIZE, TILE_SIZE))
 					img_rect = img.get_rect()
 					img_rect.x = col_count * TILE_SIZE
 					img_rect.y = row_count * TILE_SIZE
 					tile = (img, img_rect)
 					self.tile_list.append(tile)
-				if tile == 5:
+				if tile == 4:
 					img = pygame.transform.scale(CENTER_BRANCH_IMG, (TILE_SIZE, TILE_SIZE // 2))
 					img_rect = img.get_rect()
 					img_rect.x = col_count * TILE_SIZE
 					img_rect.y = row_count * TILE_SIZE
 					tile = (img, img_rect)
 					self.tile_list.append(tile)
-				
+				if tile == 5:
+					img = pygame.transform.scale(LADDER_IMG, (TILE_SIZE, TILE_SIZE))
+					img_rect = img.get_rect()
+					img_rect.x = col_count * TILE_SIZE
+					img_rect.y = row_count * TILE_SIZE
+					tile = (img, img_rect)
 					self.tile_list.append(tile)
+				'''
+				if tile == 6:
+					img = pygame.transform.scale(FAKE_CENTER, (TILE_SIZE, TILE_SIZE // 2))
+					img_rect = img.get_rect()
+					img_rect.x = col_count * TILE_SIZE
+					img_rect.y = row_count * TILE_SIZE
+					tile = (img, img_rect)
+					self.tile_list.append(tile)
+'''
 				col_count += 1
 			row_count += 1
 
 	def draw(self):
 		for tile in self.tile_list:
 			SCREEN.blit(tile[0], tile[1])
-			pygame.draw.rect(SCREEN, (255, 255, 255), tile[1], 2)
+			#pygame.draw.rect(SCREEN, (255, 255, 255), tile[1], 2)
 
 class Button():
 	def __init__ (self, x, y, image):
@@ -276,7 +294,7 @@ class Button():
 # ------------------------------------------------------ INSTANCES ------------------------------------------------------
 #WORLD
 #load in level data
-pickle_in = open('level1_data', 'rb')
+pickle_in = open('level3_data', 'rb')
 world_data = pickle.load(pickle_in)
 world = World(world_data)
 
