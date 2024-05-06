@@ -176,7 +176,7 @@ class Player():
 				#check if below the ground i.e. jumping
 				if self.vel_y < 0:
 					dy = tile[1].bottom - self.rect.top
-					self.vel_y = 0
+					self.vel_y = 78
 				#check if above the ground i.e. falling
 				elif self.vel_y >= 0:
 					dy = tile[1].top - self.rect.bottom
@@ -246,7 +246,6 @@ class World():
 					img_rect.y = row_count * TILE_SIZE
 					tile = (img, img_rect)
 					self.tile_list.append(tile)
-				'''
 				if tile == 6:
 					img = pygame.transform.scale(FAKE_CENTER, (TILE_SIZE, TILE_SIZE // 2))
 					img_rect = img.get_rect()
@@ -254,7 +253,7 @@ class World():
 					img_rect.y = row_count * TILE_SIZE
 					tile = (img, img_rect)
 					self.tile_list.append(tile)
-'''
+
 				col_count += 1
 			row_count += 1
 
@@ -294,7 +293,7 @@ class Button():
 # ------------------------------------------------------ INSTANCES ------------------------------------------------------
 #WORLD
 #load in level data
-pickle_in = open('level3_data', 'rb')
+pickle_in = open('level2_data', 'rb')
 world_data = pickle.load(pickle_in)
 world = World(world_data)
 
