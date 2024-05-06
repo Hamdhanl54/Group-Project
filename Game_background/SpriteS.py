@@ -276,7 +276,7 @@ class Button():
 # ------------------------------------------------------ INSTANCES ------------------------------------------------------
 #WORLD
 #load in level data
-pickle_in = open('level1_data.csv', 'rb')
+pickle_in = open('level1_data', 'rb')
 world_data = pickle.load(pickle_in)
 world = World(world_data)
 
