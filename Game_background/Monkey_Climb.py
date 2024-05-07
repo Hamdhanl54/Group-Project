@@ -17,6 +17,7 @@ pygame.display.set_caption('Platformer')
 TILE_SIZE = 50
 game_over = 0
 MAIN_MENU = True
+global level 
 level = 1
 max_levels = 4
 TITLE = 'MONEY CLIMB'
@@ -81,39 +82,10 @@ def reset_level(level):
 # ------------------------------------------------------ CLASS ------------------------------------------------------
 class Player():
 	def __init__ (self, x, y):
-		#ideling animations
-		self.images_idel = []
-		self.idel_index = 0
-		self.idel_counter = 0
-		for num in range (1, 21):
-			img_idel = pygame.image.load(f'Images/Monkey/Ideling/idel_img{num}.png')
-			img_idel = pygame.transform.scale(img_idel, (60, 60))
-			self.images_idel.append(img_idel)
-		self.image = self.images_idel[self.idel_index]
+		self.reset(x, y)
 		
-        #left and right animations
-		self.images_right = []
-		self.images_left = []
-		self.index = 0
-		self.counter = 0
-		for num in range (1, 5):
-			img_right = pygame.image.load(f'Images/Monkey/Right&Left/right_img{num}.png')
-			img_right = pygame.transform.scale(img_right, (60, 60))
-			img_left = pygame.transform.flip(img_right, True, False)
-			self.images_right.append(img_right)
-			self.images_left.append(img_left)
-		self.image = self.images_right[self.index]
-		
-		self.rect = self.image.get_rect()
-		self.rect.x = x
-		self.rect.y = y
-		self.width = self.image.get_width()
-		self.height = self.image.get_height()
-		self.vel_y = 0
-		self.jumped = False
-		self.direction = 0
 
-	def update(self, game_over):
+	def update(self, game_over,):
 		
 		dx = 0
 		dy = 0
@@ -197,6 +169,16 @@ class Player():
 			if pygame.sprite.spritecollide(self, exit_group, False):
 				game_over = 1
 
+			if self.rect.bottom >= SCREEN_HEIGHT:
+                # Decrement level to go to previous level
+				level -= 1
+                # Reset player position to starting position of new level
+				world_data = []
+				world = reset_level(level)
+				game_over = 0
+
+			
+
 	
 			#update player coordinates
 			self.rect.x += dx
@@ -207,6 +189,39 @@ class Player():
 		pygame.draw.rect(SCREEN, (255, 255, 255), self.rect, 2)
 
 		return game_over
+	
+	def reset(self, x, y):
+		#ideling animations
+		self.images_idel = []
+		self.idel_index = 0
+		self.idel_counter = 0
+		for num in range (1, 21):
+			img_idel = pygame.image.load(f'Images/Monkey/Ideling/idel_img{num}.png')
+			img_idel = pygame.transform.scale(img_idel, (60, 60))
+			self.images_idel.append(img_idel)
+		self.image = self.images_idel[self.idel_index]
+		
+        #left and right animations
+		self.images_right = []
+		self.images_left = []
+		self.index = 0
+		self.counter = 0
+		for num in range (1, 5):
+			img_right = pygame.image.load(f'Images/Monkey/Right&Left/right_img{num}.png')
+			img_right = pygame.transform.scale(img_right, (60, 60))
+			img_left = pygame.transform.flip(img_right, True, False)
+			self.images_right.append(img_right)
+			self.images_left.append(img_left)
+		self.image = self.images_right[self.index]
+		
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+		self.width = self.image.get_width()
+		self.height = self.image.get_height()
+		self.vel_y = 0
+		self.jumped = False
+		self.direction = 0
 
 class World():
 	def __init__(self, data):
