@@ -15,8 +15,10 @@ pygame.display.set_caption('Platformer')
 
 # ------------------------------------------------------ VARIABLES ------------------------------------------------------
 TILE_SIZE = 50
+game_over = 0
 MAIN_MENU = True
 level = 1
+max_levels = 4
 TITLE = 'MONEY CLIMB'
 CLOCK = pygame.time.Clock()
 FPS = 60
@@ -65,6 +67,16 @@ def draw_grid():
 		pygame.draw.line(SCREEN, (255, 255, 255), (line * TILE_SIZE, 0), (line * TILE_SIZE, SCREEN_HEIGHT))
 '''
 
+# ------------------------------------------------------ FUNCTIONS ------------------------------------------------------
+def reset_level(level):
+	player.reset(100, SCREEN_HEIGHT - 130)
+	exit_group.empty()
+	if path.exists(f'level{level}_data'):
+		pickle_in = open(f'level{level}_data', 'rb')
+	world_data = pickle.load(pickle_in)
+	world = World(world_data)
+
+	return world
 
 # ------------------------------------------------------ CLASS ------------------------------------------------------
 class Player():
@@ -101,100 +113,100 @@ class Player():
 		self.jumped = False
 		self.direction = 0
 
-	def update(self):
+	def update(self, game_over):
 		
 		dx = 0
 		dy = 0
 		idel_cooldown = 3
 		right_cooldown = 3
 
-		#get keypresses
-		key = pygame.key.get_pressed()
-		
-		if key[pygame.K_LEFT] == False and key[pygame.K_RIGHT] == False:
-			self.counter = 0
-			self.index = 0
-			if self.direction == 1:
-				self.image = self.images_right[self.index]
-			if self.direction == -1:
-				self.image = self.images_left[self.index]
-			
-		if key[pygame.K_SPACE] and self.jumped == False:
-			self.vel_y = -20
-			self.jumped = True
-	
-		if key[pygame.K_SPACE] == False:
-			self.jumped = False
-			
+		if game_over == 0:
 
-		if key[pygame.K_LEFT]:
-			dx -= 10
-			self.counter += 1
-			self.direction = -1
-
-		if key[pygame.K_RIGHT]:
-			dx += 10
-			self.counter += 1
-			self.direction = 1
-			
-		
-
-        #handle animation
-		#idel
-		self.idel_counter += 1
-		if self.idel_counter > idel_cooldown:
-			self.idel_counter = 0
-			self.idel_index += 1
-			if self.idel_index >= len(self.images_idel):
-				self.idel_index = 0
-			self.image = self.images_idel[self.idel_index]
-			
-        #right and left
-		self.counter += 1
-		if self.counter > right_cooldown:
-			self.counter = 0
-			self.index += 1
-			if self.index >= len(self.images_right):
+			#get keypresses
+			key = pygame.key.get_pressed()
+			if key[pygame.K_LEFT] == False and key[pygame.K_RIGHT] == False:
+				self.counter = 0
 				self.index = 0
-			if self.direction == 1:
-				self.image = self.images_right[self.index]
-			if self.direction == -1:
-				self.image = self.images_left[self.index]
-			
-            
-		#add gravity 
-		self.vel_y += 1
-		if self.vel_y > 10:
-			self.vel_y = 10
-		dy += self.vel_y
+				if self.direction == 1:
+					self.image = self.images_right[self.index]
+				if self.direction == -1:
+					self.image = self.images_left[self.index]
+				
+			if key[pygame.K_SPACE] and self.jumped == False:
+				self.vel_y = -20
+				self.jumped = True
 		
-		#check for collision
-		for tile in world.tile_list:
-			#chech for collision in the x direction
-			if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
-				dx = 0
-			#check for collisions in the y direction
-			if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
-				#check if below the ground i.e. jumping
-				if self.vel_y < 0:
-					dy = tile[1].bottom - self.rect.top
-					self.vel_y = 78
-				#check if above the ground i.e. falling
-				elif self.vel_y >= 0:
-					dy = tile[1].top - self.rect.bottom
+			if key[pygame.K_SPACE] == False:
+				self.jumped = False
+				
 
-  
-		#update player coordinates
-		self.rect.x += dx
-		self.rect.y += dy
+			if key[pygame.K_LEFT]:
+				dx -= 10
+				self.counter += 1
+				self.direction = -1
 
-		if self.rect.bottom > SCREEN_HEIGHT:
-			self.rect.bottom = SCREEN_HEIGHT
-			dy = 0
+			if key[pygame.K_RIGHT]:
+				dx += 10
+				self.counter += 1
+				self.direction = 1
+				
+			#handle animation
+			#idel
+			self.idel_counter += 1
+			if self.idel_counter > idel_cooldown:
+				self.idel_counter = 0
+				self.idel_index += 1
+				if self.idel_index >= len(self.images_idel):
+					self.idel_index = 0
+				self.image = self.images_idel[self.idel_index]
+				
+			#right and left
+			self.counter += 1
+			if self.counter > right_cooldown:
+				self.counter = 0
+				self.index += 1
+				if self.index >= len(self.images_right):
+					self.index = 0
+				if self.direction == 1:
+					self.image = self.images_right[self.index]
+				if self.direction == -1:
+					self.image = self.images_left[self.index]
+				
+			#add gravity 
+			self.vel_y += 1
+			if self.vel_y > 10:
+				self.vel_y = 10
+			dy += self.vel_y
+			
+			#check for collision
+			for tile in world.tile_list:
+				#chech for collision in the x direction
+				if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
+					dx = 0
+				#check for collisions in the y direction
+				if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+					#check if below the ground i.e. jumping
+					if self.vel_y < 0:
+						dy = tile[1].bottom - self.rect.top
+						self.vel_y = 78
+					#check if above the ground i.e. falling
+					elif self.vel_y >= 0:
+						dy = tile[1].top - self.rect.bottom
+			
+			#check collision with exit
+			if pygame.sprite.spritecollide(self, exit_group, False):
+				game_over = 1
+
+	
+			#update player coordinates
+			self.rect.x += dx
+			self.rect.y += dy
 
 		#draw player onto screen
 		SCREEN.blit(self.image, self.rect)
 		pygame.draw.rect(SCREEN, (255, 255, 255), self.rect, 2)
+
+		return game_over
 
 class World():
 	def __init__(self, data):
@@ -337,8 +349,22 @@ while run:
 		SCREEN.blit(LVL_BG_IMG, (0, 0))
 		world.draw()
 		exit_group.draw(SCREEN)
-		player.update()
+		game_over = player.update(game_over)
 		#draw_grid()
+
+		#if player has completed level
+		if game_over == 1:
+			#reset game and go to next level
+			level += 1
+			if level <= max_levels:
+				#reset level
+				world_data = []
+				world = reset_level(level)
+				game_over = 0
+			else:
+				#restart game
+				pass
+
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
