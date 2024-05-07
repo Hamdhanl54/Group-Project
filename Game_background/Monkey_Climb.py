@@ -17,7 +17,6 @@ pygame.display.set_caption('Platformer')
 TILE_SIZE = 50
 game_over = 0
 MAIN_MENU = True
-global level 
 level = 1
 max_levels = 4
 TITLE = 'MONEY CLIMB'
@@ -85,7 +84,7 @@ class Player():
 		self.reset(x, y)
 		
 
-	def update(self, game_over,):
+	def update(self, game_over):
 		
 		dx = 0
 		dy = 0
@@ -146,8 +145,8 @@ class Player():
 				
 			#add gravity 
 			self.vel_y += 1
-			if self.vel_y > 10:
-				self.vel_y = 10
+			if self.vel_y > 15:
+				self.vel_y = 15
 			dy += self.vel_y
 			
 			#check for collision
@@ -168,17 +167,6 @@ class Player():
 			#check collision with exit
 			if pygame.sprite.spritecollide(self, exit_group, False):
 				game_over = 1
-
-			if self.rect.bottom >= SCREEN_HEIGHT:
-                # Decrement level to go to previous level
-				level -= 1
-                # Reset player position to starting position of new level
-				world_data = []
-				world = reset_level(level)
-				game_over = 0
-
-			
-
 	
 			#update player coordinates
 			self.rect.x += dx
@@ -342,10 +330,6 @@ start_button = Button(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 150, START_B
 exit_button = Button(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 300, EXIT_BUTTON_IMG)
 
 
-
-
-
-
 run = True
 while run:
 
@@ -379,7 +363,11 @@ while run:
 			else:
 				#restart game
 				pass
-
+		
+		if player.rect.bottom > SCREEN_HEIGHT:
+				respawn_x = player.rect.x
+				player.rect.bottom = 0
+				player.rect.x = respawn_x
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
