@@ -2,6 +2,7 @@
 import pygame
 from pygame.locals import *
 import pickle
+from os import path
 pygame.init()
 
 
@@ -15,6 +16,7 @@ pygame.display.set_caption('Platformer')
 # ------------------------------------------------------ VARIABLES ------------------------------------------------------
 TILE_SIZE = 50
 MAIN_MENU = True
+level = 1
 TITLE = 'MONEY CLIMB'
 CLOCK = pygame.time.Clock()
 FPS = 60
@@ -194,8 +196,6 @@ class Player():
 		SCREEN.blit(self.image, self.rect)
 		pygame.draw.rect(SCREEN, (255, 255, 255), self.rect, 2)
 
-
-
 class World():
 	def __init__(self, data):
 		self.tile_list = []
@@ -241,12 +241,8 @@ class World():
 					tile = (img, img_rect)
 					self.tile_list.append(tile)
 				if tile == 5:
-					img = pygame.transform.scale(LADDER_IMG, (TILE_SIZE, TILE_SIZE))
-					img_rect = img.get_rect()
-					img_rect.x = col_count * TILE_SIZE
-					img_rect.y = row_count * TILE_SIZE
-					tile = (img, img_rect)
-					self.tile_list.append(tile)
+					exit = Exit(col_count * TILE_SIZE, row_count * TILE_SIZE - (TILE_SIZE * 2))
+					exit_group.add(exit)
 				if tile == 6:
 					img = pygame.transform.scale(FAKE_CENTER, (TILE_SIZE, TILE_SIZE // 2))
 					img_rect = img.get_rect()
@@ -290,17 +286,29 @@ class Button():
 		SCREEN.blit(self.image, self.rect)
 		return action
 
+class Exit(pygame.sprite.Sprite):
+	def __init__ (self, x, y):
+		pygame.sprite.Sprite.__init__(self)
+		img = LADDER_IMG
+		self.image = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE * 3))
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
 
 
 # ------------------------------------------------------ INSTANCES ------------------------------------------------------
-#WORLD
-#load in level data
-pickle_in = open('level3_data', 'rb')
-world_data = pickle.load(pickle_in)
-world = World(world_data)
-
 #MONKEY
 player = Player(100, SCREEN_HEIGHT - 130)
+
+#EXITS
+exit_group = pygame.sprite.Group()
+
+#WORLD
+#load in level data
+if path.exists(f'level{level}_data'):
+	pickle_in = open(f'level{level}_data', 'rb')
+world_data = pickle.load(pickle_in)
+world = World(world_data)
 
 #BUTTON
 start_button = Button(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 150, START_BUTTON_IMG)
@@ -328,6 +336,7 @@ while run:
 	else:
 		SCREEN.blit(LVL_BG_IMG, (0, 0))
 		world.draw()
+		exit_group.draw(SCREEN)
 		player.update()
 		#draw_grid()
 
