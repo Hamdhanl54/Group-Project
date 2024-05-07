@@ -1,7 +1,7 @@
 import pygame 
 import button
 import csv
-#import pickle
+import pickle
 pygame.init()
 
 #game window
@@ -24,7 +24,7 @@ font = pygame.font.SysFont('Futura', 30)
 
 MAX_COLS = 28
 TILE_SIZE = 50
-TILE_TYPES = 7
+TILE_TYPES = 8
 level = 0
 current_tile = 0
 
@@ -48,9 +48,11 @@ for x in range(TILE_TYPES):
     if x == 4:
         img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE // 2))
     if x == 5:
-        img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE * 2))
+        img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE * 3))
     if x == 6:
         img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE // 2))
+    if x == 7:
+        img = pygame.transform.scale(img, (TILE_SIZE // 4, TILE_SIZE // 2))
     img_list.append(img)
 
 save_img = pygame.image.load('Level_Editor/LEVEL_ASSETS/save_btn.png').convert_alpha()
@@ -126,26 +128,16 @@ while run:
     #save and load data
     if save_button.draw(SCREEN):
         #save level data
-        with open(f'level{level}_data.csv', 'w', newline = '') as csvfile:
-            writer = csv.writer(csvfile, delimiter = ',')
-            for row in world_data:
-                writer.writerow(row)
-        #pickle_out = open(f'level{level}_data', 'wb')
-        #pickle.dump(world_data, pickle_out)6
-        #pickle_out.close()
+        pickle_out = open(f'level{level}_data', 'wb')
+        pickle.dump(world_data, pickle_out)
+        pickle_out.close()
         
 
     if load_button.draw(SCREEN):
-        #load in level data
-        with open(f'level{level}_data.csv', newline='') as csvfile:
-            reader = csv.reader(csvfile, delimiter = ',')
-            for x, row in enumerate(reader):
-                for y, tile in enumerate(row):
-                    world_data[x][y] = int(tile)
-                
-        #world_data = []
-        #pickle_in = open(f'level{level}_data', 'rb')
-        #world_data = pickle.load(pickle_in)
+        #load in level data  
+        world_data = []
+        pickle_in = open(f'level{level}_data', 'rb')
+        world_data = pickle.load(pickle_in)
         
 
 
