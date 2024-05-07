@@ -23,6 +23,8 @@ TITLE = 'MONEY CLIMB'
 CLOCK = pygame.time.Clock()
 FPS = 60
 
+#Groups
+exit_group = pygame.sprite.Group()
 
 # ------------------------------------------------------ IMAGES ------------------------------------------------------
 # ----- MENU -----
@@ -114,12 +116,12 @@ class Player():
 				
 
 			if key[pygame.K_LEFT]:
-				dx -= 10
+				dx -= 8
 				self.counter += 1
 				self.direction = -1
 
 			if key[pygame.K_RIGHT]:
-				dx += 10
+				dx += 8
 				self.counter += 1
 				self.direction = 1
 				
@@ -322,7 +324,7 @@ class Exit(pygame.sprite.Sprite):
 # ------------------------------------------------------ INSTANCES ------------------------------------------------------
 #WORLD
 #load in level data
-pickle_in = open('level4_data', 'rb')
+pickle_in = open(f'level{level}_data', 'rb')
 world_data = pickle.load(pickle_in)
 world = World(world_data)
 
@@ -330,7 +332,7 @@ world = World(world_data)
 player = Player(100, SCREEN_HEIGHT - 130)
 
 #EXITS
-exit_group = pygame.sprite.Group()
+
 
 #WORLD
 #load in level data
@@ -362,10 +364,8 @@ while run:
 		SCREEN.blit(LVL_BG_IMG, (0, 0))
 		world.draw()
 		player.update(game_over)
-		draw_grid()
 		exit_group.draw(SCREEN)
 		game_over = player.update(game_over)
-		#draw_grid()
 
 		#if player has completed level
 		if game_over == 1:

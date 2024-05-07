@@ -153,21 +153,6 @@ while run:
     #highlight the selected tile
     pygame.draw.rect(SCREEN, RED, button_list[current_tile].rect, 3)
         
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     #add new tiles to the screen
     #get mouse pos
     pos = pygame.mouse.get_pos()
