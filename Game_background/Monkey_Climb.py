@@ -361,7 +361,7 @@ while run:
 	else:
 		SCREEN.blit(LVL_BG_IMG, (0, 0))
 		world.draw()
-		player.update()
+		player.update(game_over)
 		draw_grid()
 		exit_group.draw(SCREEN)
 		game_over = player.update(game_over)
