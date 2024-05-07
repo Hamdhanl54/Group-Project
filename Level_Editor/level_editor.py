@@ -52,7 +52,7 @@ for x in range(TILE_TYPES):
     if x == 6:
         img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE // 2))
     if x == 7:
-        img = pygame.transform.scale(img, (TILE_SIZE // 4, TILE_SIZE // 2))
+        img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE * 3))
     img_list.append(img)
 
 save_img = pygame.image.load('Level_Editor/LEVEL_ASSETS/save_btn.png').convert_alpha()

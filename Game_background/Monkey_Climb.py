@@ -21,10 +21,8 @@ level = 1
 max_levels = 4
 TITLE = 'MONEY CLIMB'
 CLOCK = pygame.time.Clock()
-FPS = 60
+FPS = 50
 
-#Groups
-exit_group = pygame.sprite.Group()
 
 # ------------------------------------------------------ IMAGES ------------------------------------------------------
 # ----- MENU -----
@@ -62,7 +60,8 @@ LADDER_IMG = pygame.image.load('Images/LEVEL_ASSETS/Ladder_asset.png')
 
 FAKE_CENTER = pygame.image.load('Images/LEVEL_ASSETS/Center_branch_asset.jpg')
 
-SMALL_CENTER = pygame.image.load('Images/LEVEL_ASSETS/Center_branch_asset.jpg')
+FAKE_LADDER = pygame.image.load('Images/LEVEL_ASSETS/Ladder_asset.png')
+
 
 
 def draw_grid():
@@ -99,15 +98,9 @@ class Player():
 
 			#get keypresses
 			key = pygame.key.get_pressed()
-			if key[pygame.K_LEFT] == False and key[pygame.K_RIGHT] == False:
-				self.counter = 0
-				self.index = 0
-				if self.direction == 1:
-					self.image = self.images_right[self.index]
-				if self.direction == -1:
-					self.image = self.images_left[self.index]
+			
 				
-			if key[pygame.K_SPACE] and self.jumped == False:
+			if key[pygame.K_SPACE] and self.jumped == False and self.in_air == False:
 				self.vel_y = -20
 				self.jumped = True
 		
@@ -116,15 +109,22 @@ class Player():
 				
 
 			if key[pygame.K_LEFT]:
-				dx -= 8
+				dx -= 9
 				self.counter += 1
 				self.direction = -1
 
 			if key[pygame.K_RIGHT]:
-				dx += 8
+				dx += 9
 				self.counter += 1
 				self.direction = 1
-				
+			
+			if key[pygame.K_LEFT] == False and key[pygame.K_RIGHT] == False:
+				self.counter = 0
+				self.index = 0
+				if self.direction == 1:
+					self.image = self.images_right[self.index]
+				if self.direction == -1:
+					self.image = self.images_left[self.index]
 			#handle animation
 			#idel
 			self.idel_counter += 1
@@ -149,11 +149,12 @@ class Player():
 				
 			#add gravity 
 			self.vel_y += 1
-			if self.vel_y > 15:
-				self.vel_y = 15
+			if self.vel_y > 12:
+				self.vel_y = 12
 			dy += self.vel_y
 			
 			#check for collision
+			self.in_air = True
 			for tile in world.tile_list:
 				#chech for collision in the x direction
 				if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
@@ -163,10 +164,12 @@ class Player():
 					#check if below the ground i.e. jumping
 					if self.vel_y < 0:
 						dy = tile[1].bottom - self.rect.top
-						self.vel_y = 78
+						self.vel_y = 0
 					#check if above the ground i.e. falling
 					elif self.vel_y >= 0:
 						dy = tile[1].top - self.rect.bottom
+						self.vel_y = 0
+						self.in_air = False
 			
 			#check collision with exit
 			if pygame.sprite.spritecollide(self, exit_group, False):
@@ -214,11 +217,13 @@ class Player():
 		self.vel_y = 0
 		self.jumped = False
 		self.direction = 0
+		self.in_air = True
 
 class World():
 	def __init__(self, data):
 		self.tile_list = []
 		self.fake_center_platfroms = []
+		self.fake_ladder = []
 
 		row_count = 0
 		for row in data:
@@ -269,11 +274,12 @@ class World():
 					img_rect.y = row_count * TILE_SIZE
 					self.fake_center_platfroms.append((img, img_rect))
 				if tile == 7:
-					img = pygame.transform.scale(SMALL_CENTER, (TILE_SIZE // 4, TILE_SIZE // 2))
+					img = pygame.transform.scale(FAKE_LADDER, (TILE_SIZE , TILE_SIZE - (TILE_SIZE * 2)))
+					img_rect = img.get_rect()
 					img_rect.x = col_count * TILE_SIZE
 					img_rect.y = row_count * TILE_SIZE
-					tile = (img, img_rect)
-					self.tile_list.append(tile)
+					self.fake_ladder.append((img, img_rect))
+
 
 				col_count += 1
 			row_count += 1
@@ -283,6 +289,8 @@ class World():
 			SCREEN.blit(tile[0], tile[1])
 		for platform in self.fake_center_platfroms:
 			SCREEN.blit(platform[0], platform[1])
+		for ladder in self.fake_ladder:
+			SCREEN.blit(ladder[0], ladder[1])
 			#pygame.draw.rect(SCREEN, (255, 255, 255), tile[1], 2)
 
 class Button():
@@ -322,16 +330,14 @@ class Exit(pygame.sprite.Sprite):
 
 
 # ------------------------------------------------------ INSTANCES ------------------------------------------------------
-#WORLD
-#load in level data
-pickle_in = open(f'level{level}_data', 'rb')
-world_data = pickle.load(pickle_in)
-world = World(world_data)
+
+#Groups
+exit_group = pygame.sprite.Group()
+
 
 #MONKEY
 player = Player(100, SCREEN_HEIGHT - 130)
 
-#EXITS
 
 
 #WORLD
@@ -362,6 +368,7 @@ while run:
 
 	else:
 		SCREEN.blit(LVL_BG_IMG, (0, 0))
+		pygame.display.set_caption(f'level #{level}')
 		world.draw()
 		player.update(game_over)
 		exit_group.draw(SCREEN)
@@ -376,6 +383,7 @@ while run:
 				world_data = []
 				world = reset_level(level)
 				game_over = 0
+				pygame.display.set_caption(f'level #{level}')
 			else:
 				#restart game
 				pass
