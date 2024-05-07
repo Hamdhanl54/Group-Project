@@ -48,7 +48,7 @@ for x in range(TILE_TYPES):
     if x == 4:
         img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE // 2))
     if x == 5:
-        img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE * 2))
+        img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE * 3))
     if x == 6:
         img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE // 2))
     if x == 7:
@@ -134,7 +134,7 @@ while run:
         
 
     if load_button.draw(SCREEN):
-        #load in level data
+        #load in level data  
         world_data = []
         pickle_in = open(f'level{level}_data', 'rb')
         world_data = pickle.load(pickle_in)
