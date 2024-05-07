@@ -56,12 +56,14 @@ LADDER_IMG = pygame.image.load('Images/LEVEL_ASSETS/Ladder_asset.png')
 
 FAKE_CENTER = pygame.image.load('Images/LEVEL_ASSETS/Center_branch_asset.jpg')
 
-'''
+SMALL_CENTER = pygame.image.load('Images/LEVEL_ASSETS/Center_branch_asset.jpg')
+
+
 def draw_grid():
 	for line in range(0, 29):
 		pygame.draw.line(SCREEN, (255, 255, 255), (0, line * TILE_SIZE), (SCREEN_WIDTH, line * TILE_SIZE))
 		pygame.draw.line(SCREEN, (255, 255, 255), (line * TILE_SIZE, 0), (line * TILE_SIZE, SCREEN_HEIGHT))
-'''
+
 
 
 # ------------------------------------------------------ CLASS ------------------------------------------------------
@@ -253,6 +255,12 @@ class World():
 					img_rect.x = col_count * TILE_SIZE
 					img_rect.y = row_count * TILE_SIZE
 					self.fake_center_platfroms.append((img, img_rect))
+				if tile == 7:
+					img = pygame.transform.scale(SMALL_CENTER, (TILE_SIZE // 4, TILE_SIZE // 2))
+					img_rect.x = col_count * TILE_SIZE
+					img_rect.y = row_count * TILE_SIZE
+					tile = (img, img_rect)
+					self.tile_list.append(tile)
 
 				col_count += 1
 			row_count += 1
@@ -295,7 +303,7 @@ class Button():
 # ------------------------------------------------------ INSTANCES ------------------------------------------------------
 #WORLD
 #load in level data
-pickle_in = open('level3_data', 'rb')
+pickle_in = open('level4_data', 'rb')
 world_data = pickle.load(pickle_in)
 world = World(world_data)
 
@@ -329,7 +337,7 @@ while run:
 		SCREEN.blit(LVL_BG_IMG, (0, 0))
 		world.draw()
 		player.update()
-		#draw_grid()
+		draw_grid()
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
