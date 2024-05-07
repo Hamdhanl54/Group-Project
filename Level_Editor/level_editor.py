@@ -48,7 +48,7 @@ for x in range(TILE_TYPES):
     if x == 4:
         img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE // 2))
     if x == 5:
-        img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
+        img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE * 2))
     if x == 6:
         img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE // 2))
     img_list.append(img)
