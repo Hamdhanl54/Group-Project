@@ -74,12 +74,14 @@ def draw_grid():
 def reset_level(level):
 	player.reset(100, SCREEN_HEIGHT - 130)
 	exit_group.empty()
+	fake_exit_grounp.empty()
 	if path.exists(f'level{level}_data'):
 		pickle_in = open(f'level{level}_data', 'rb')
 	world_data = pickle.load(pickle_in)
 	world = World(world_data)
 
 	return world
+
 
 # ------------------------------------------------------ CLASS ------------------------------------------------------
 class Player():
@@ -274,12 +276,8 @@ class World():
 					img_rect.y = row_count * TILE_SIZE
 					self.fake_center_platfroms.append((img, img_rect))
 				if tile == 7:
-					img = pygame.transform.scale(FAKE_LADDER, (TILE_SIZE , TILE_SIZE - (TILE_SIZE * 2)))
-					img_rect = img.get_rect()
-					img_rect.x = col_count * TILE_SIZE
-					img_rect.y = row_count * TILE_SIZE
-					self.fake_ladder.append((img, img_rect))
-
+					fake_exit = Exit(col_count * TILE_SIZE, row_count * TILE_SIZE - (TILE_SIZE * 2))
+					fake_exit_grounp.add(fake_exit)
 
 				col_count += 1
 			row_count += 1
@@ -333,18 +331,16 @@ class Exit(pygame.sprite.Sprite):
 
 #Groups
 exit_group = pygame.sprite.Group()
-
+fake_exit_grounp = pygame.sprite.Group()
 
 #MONKEY
 player = Player(100, SCREEN_HEIGHT - 130)
-
-
 
 #WORLD
 #load in level data
 if path.exists(f'level{level}_data'):
 	pickle_in = open(f'level{level}_data', 'rb')
-world_data = pickle.load(pickle_in)
+	world_data = pickle.load(pickle_in)
 world = World(world_data)
 
 #BUTTON
@@ -372,6 +368,8 @@ while run:
 		world.draw()
 		player.update(game_over)
 		exit_group.draw(SCREEN)
+		fake_exit_grounp.draw(SCREEN)
+		fake_exit_grounp.draw(SCREEN)
 		game_over = player.update(game_over)
 
 		#if player has completed level
@@ -389,9 +387,11 @@ while run:
 				pass
 		
 		if player.rect.bottom > SCREEN_HEIGHT:
-				respawn_x = player.rect.x
-				player.rect.bottom = 0
-				player.rect.x = respawn_x
+			respawn_x = player.rect.x
+			player.rect.bottom = 0
+			player.rect.x = respawn_x
+			
+			
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
