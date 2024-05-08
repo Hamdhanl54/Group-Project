@@ -204,7 +204,7 @@ class Player():
 		self.index = 0
 		self.counter = 0
 		for num in range (1, 5):
-			img_right = pygame.image.load(f'Images/Monkey/Right&Left/right_img{num}.png')
+			img_right = pygame.image.load(f'Images/Monkey/Right&Left/run_img{num}.png')
 			img_right = pygame.transform.scale(img_right, (60, 60))
 			img_left = pygame.transform.flip(img_right, True, False)
 			self.images_right.append(img_right)
