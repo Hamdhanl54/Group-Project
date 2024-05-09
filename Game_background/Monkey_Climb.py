@@ -21,7 +21,11 @@ level = 1
 max_levels = 4
 TITLE = 'MONEY CLIMB'
 CLOCK = pygame.time.Clock()
+start_time = pygame.time.get_ticks()
+FONT = pygame.font.SysFont('font.ttf', 20)
 FPS = 50
+timer = 0 
+timer_text = 'Time: 0'
 
 
 # ------------------------------------------------------ IMAGES ------------------------------------------------------
@@ -93,7 +97,7 @@ class Player():
 		
 		dx = 0
 		dy = 0
-		idel_cooldown = 3
+		idle_cooldown = 3
 		right_cooldown = 3
 
 		if game_over == 0:
@@ -144,14 +148,14 @@ class Player():
 			
 			if key[pygame.K_LEFT] == False and key[pygame.K_RIGHT] == False:
 				#handle animation
-				#idel
-				self.idel_counter += 1
-				if self.idel_counter > idel_cooldown:
-					self.idel_counter = 0
-					self.idel_index += 1
-					if self.idel_index >= len(self.images_idel):
-						self.idel_index = 0
-					self.image = self.images_idel[self.idel_index]
+				#idle
+				self.idle_counter += 1
+				if self.idle_counter > idle_cooldown:
+					self.idle_counter = 0
+					self.idle_index += 1
+					if self.idle_index >= len(self.images_idle):
+						self.idle_index = 0
+					self.image = self.images_idle[self.idle_index]
 				
 			
 				
@@ -189,27 +193,26 @@ class Player():
 
 		#draw player onto screen
 		SCREEN.blit(self.image, self.rect)
-		pygame.draw.rect(SCREEN, (255, 255, 255), self.rect, 2)
 
 		return game_over
 	
 	def reset(self, x, y):
-		#ideling animations
-		self.images_idel = []
-		self.idel_index = 0
-		self.idel_counter = 0
+		#idleing animations
+		self.images_idle = []
+		self.idle_index = 0
+		self.idle_counter = 0
 		for num in range (1, 21):
-			img_idel = pygame.image.load(f'Images/Monkey/Ideling/idel_img{num}.png')
-			img_idel = pygame.transform.scale(img_idel, (60, 60))
-			self.images_idel.append(img_idel)
-		self.image = self.images_idel[self.idel_index]
+			img_idle = pygame.image.load(f'Images/Monkey/Idleing/idle_img{num}.png')
+			img_idle = pygame.transform.scale(img_idle, (60, 60))
+			self.images_idle.append(img_idle)
+		self.image = self.images_idle[self.idle_index]
 		
         #left and right animations
 		self.images_right = []
 		self.images_left = []
 		self.index = 0
 		self.counter = 0
-		for num in range (1, 4):
+		for num in range (1, 12):
 			img_left = pygame.image.load(f'Images/Monkey/Right&Left/run_img{num}.png')
 			img_left = pygame.transform.scale(img_left, (60, 60))
 			img_right = pygame.transform.flip(img_left, True, False)
@@ -370,13 +373,18 @@ while run:
 
 	else:
 		SCREEN.blit(LVL_BG_IMG, (0, 0))
-		pygame.display.set_caption(f'level #{level}')
 		world.draw()
 		player.update(game_over)
 		exit_group.draw(SCREEN)
 		fake_exit_grounp.draw(SCREEN)
 		fake_exit_grounp.draw(SCREEN)
 		game_over = player.update(game_over)
+		# Update timer
+		timer += CLOCK.get_time() / 1000  # Convert milliseconds to seconds
+		timer_text = f"Level #{level}     Time: {int(timer)}"  # Update timer text
+
+		# Update screen caption with timer text
+		pygame.display.set_caption(timer_text)
 
 		#if player has completed level
 		if game_over == 1:

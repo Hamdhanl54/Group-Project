@@ -18,13 +18,14 @@ pygame.display.set_caption('Level Editor')
 GREEN = (0, 255, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
-ROWS = 18
+ROWS = 19
 
 font = pygame.font.SysFont('Futura', 30)
 
+
 MAX_COLS = 28
 TILE_SIZE = 50
-TILE_TYPES = 8
+TILE_TYPES = 9
 level = 0
 current_tile = 0
 
@@ -53,6 +54,9 @@ for x in range(TILE_TYPES):
         img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE // 2))
     if x == 7:
         img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE * 3))
+    if x == 8:
+        img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
+
     img_list.append(img)
 
 save_img = pygame.image.load('Level_Editor/LEVEL_ASSETS/save_btn.png').convert_alpha()
@@ -84,7 +88,7 @@ def draw_bg():
 def draw_grid():
     #veritcal lines
     for c in range(MAX_COLS + 1):
-        pygame.draw.line(SCREEN, WHITE, (c * TILE_SIZE, 0), (c * TILE_SIZE, SCREEN_HEIGHT))
+        pygame.draw.line(SCREEN, WHITE, (c * TILE_SIZE, 0), (c * TILE_SIZE, SCREEN_HEIGHT + TILE_SIZE))
     #horizontal lines
     for c in range(ROWS + 1):
         pygame.draw.line(SCREEN, WHITE, (0, c * TILE_SIZE), (SCREEN_WIDTH, c * TILE_SIZE))
@@ -138,7 +142,6 @@ while run:
         world_data = []
         pickle_in = open(f'level{level}_data', 'rb')
         world_data = pickle.load(pickle_in)
-        
 
 
     #draw tile panel and titles
@@ -160,7 +163,7 @@ while run:
     y = (pos[1]) // TILE_SIZE
 
     # check that the coords are in the tile area
-    if pos[0] < SCREEN_WIDTH and pos[1] < SCREEN_HEIGHT:
+    if pos[0] < SCREEN_WIDTH + TILE_SIZE and pos[1] < SCREEN_HEIGHT + TILE_SIZE:
         #update tile value
         if pygame.mouse.get_pressed()[0] == 1:
             if world_data[y][x] != current_tile:
