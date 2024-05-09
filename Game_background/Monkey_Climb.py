@@ -114,40 +114,46 @@ class Player():
 				dx -= 9
 				self.counter += 1
 				self.direction = -1
+				#right and left
+				self.counter += 1
+				if self.counter > right_cooldown:
+					self.counter = 0
+					self.index += 1
+					if self.index >= len(self.images_right):
+						self.index = 0
+					if self.direction == 1:
+						self.image = self.images_right[self.index]
+					if self.direction == -1:
+						self.image = self.images_left[self.index]
 
 			if key[pygame.K_RIGHT]:
 				dx += 9
 				self.counter += 1
 				self.direction = 1
+				#right and left
+				self.counter += 1
+				if self.counter > right_cooldown:
+					self.counter = 0
+					self.index += 1
+					if self.index >= len(self.images_right):
+						self.index = 0
+					if self.direction == 1:
+						self.image = self.images_right[self.index]
+					if self.direction == -1:
+						self.image = self.images_left[self.index]
 			
 			if key[pygame.K_LEFT] == False and key[pygame.K_RIGHT] == False:
-				self.counter = 0
-				self.index = 0
-				if self.direction == 1:
-					self.image = self.images_right[self.index]
-				if self.direction == -1:
-					self.image = self.images_left[self.index]
-			#handle animation
-			#idel
-			self.idel_counter += 1
-			if self.idel_counter > idel_cooldown:
-				self.idel_counter = 0
-				self.idel_index += 1
-				if self.idel_index >= len(self.images_idel):
-					self.idel_index = 0
-				self.image = self.images_idel[self.idel_index]
+				#handle animation
+				#idel
+				self.idel_counter += 1
+				if self.idel_counter > idel_cooldown:
+					self.idel_counter = 0
+					self.idel_index += 1
+					if self.idel_index >= len(self.images_idel):
+						self.idel_index = 0
+					self.image = self.images_idel[self.idel_index]
 				
-			#right and left
-			self.counter += 1
-			if self.counter > right_cooldown:
-				self.counter = 0
-				self.index += 1
-				if self.index >= len(self.images_right):
-					self.index = 0
-				if self.direction == 1:
-					self.image = self.images_right[self.index]
-				if self.direction == -1:
-					self.image = self.images_left[self.index]
+			
 				
 			#add gravity 
 			self.vel_y += 1
@@ -203,7 +209,7 @@ class Player():
 		self.images_left = []
 		self.index = 0
 		self.counter = 0
-		for num in range (1, 5):
+		for num in range (1, 4):
 			img_left = pygame.image.load(f'Images/Monkey/Right&Left/run_img{num}.png')
 			img_left = pygame.transform.scale(img_left, (60, 60))
 			img_right = pygame.transform.flip(img_left, True, False)
