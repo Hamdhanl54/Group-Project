@@ -9,7 +9,7 @@ pygame.init()
 # ------------------------------------------------------ SCREEN ------------------------------------------------------
 SCREEN_WIDTH = 1400
 SCREEN_HEIGHT = 900
-SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE)
+SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
 pygame.display.set_caption('Platformer')
 
 
