@@ -9,7 +9,7 @@ pygame.init()
 # ------------------------------------------------------ SCREEN ------------------------------------------------------
 SCREEN_WIDTH = 1400
 SCREEN_HEIGHT = 900
-SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE)
 pygame.display.set_caption('Platformer')
 
 
@@ -18,7 +18,7 @@ TILE_SIZE = 50
 game_over = 0
 MAIN_MENU = True
 level = 1
-max_levels = 4
+max_levels = 10
 TITLE = 'MONEY CLIMB'
 CLOCK = pygame.time.Clock()
 start_time = pygame.time.get_ticks()
