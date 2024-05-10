@@ -203,7 +203,7 @@ class Player():
 		self.idle_counter = 0
 		for num in range (1, 21):
 			img_idle = pygame.image.load(f'Images/Monkey/Idleing/idle_img{num}.png')
-			img_idle = pygame.transform.scale(img_idle, (60, 60))
+			img_idle = pygame.transform.scale(img_idle, (TILE_SIZE, 60))
 			self.images_idle.append(img_idle)
 		self.image = self.images_idle[self.idle_index]
 		
@@ -214,7 +214,7 @@ class Player():
 		self.counter = 0
 		for num in range (1, 12):
 			img_left = pygame.image.load(f'Images/Monkey/Right&Left/run_img{num}.png')
-			img_left = pygame.transform.scale(img_left, (60, 60))
+			img_left = pygame.transform.scale(img_left, (TILE_SIZE, 60))
 			img_right = pygame.transform.flip(img_left, True, False)
 			self.images_left.append(img_left)
 			self.images_right.append(img_right)
