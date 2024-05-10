@@ -381,7 +381,7 @@ while run:
 		game_over = player.update(game_over)
 		# Update timer
 		timer += CLOCK.get_time() / 1000  # Convert milliseconds to seconds
-		timer_text = f"Level #{level}     Time: {int(timer)}"  # Update timer text
+		timer_text = f"Level #{level}     Time: {int(timer)}s"  # Update timer text
 
 		# Update screen caption with timer text
 		pygame.display.set_caption(timer_text)
