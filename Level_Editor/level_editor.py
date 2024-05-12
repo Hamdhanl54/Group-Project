@@ -22,7 +22,7 @@ ROWS = 19
 
 font = pygame.font.SysFont('Futura', 30)
 
-MAX_COLS = 28
+MAX_COLS = 29
 TILE_SIZE = 50
 TILE_TYPES = 9
 level = 0
