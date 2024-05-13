@@ -158,7 +158,7 @@ class Player():
 					self.image = self.images_idle[self.idle_index]
 
 			if key [pygame.K_ESCAPE]:
-				
+				pause = True
 				
 			
 				
