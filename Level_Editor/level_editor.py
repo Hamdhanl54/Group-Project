@@ -10,7 +10,7 @@ SCREEN_HEIGHT = 900
 LOWER_MARGIN = 100
 SIDE_MARGIN = 300
 
-SCREEN = pygame.display.set_mode((SCREEN_WIDTH + SIDE_MARGIN, SCREEN_HEIGHT + LOWER_MARGIN))
+SCREEN = pygame.display.set_mode((SCREEN_WIDTH + SIDE_MARGIN, SCREEN_HEIGHT + LOWER_MARGIN), pygame.FULLSCREEN)
 pygame.display.set_caption('Level Editor')
 
 
@@ -22,8 +22,7 @@ ROWS = 19
 
 font = pygame.font.SysFont('Futura', 30)
 
-
-MAX_COLS = 28
+MAX_COLS = 29
 TILE_SIZE = 50
 TILE_TYPES = 9
 level = 0
@@ -70,7 +69,7 @@ for row in range (ROWS):
 
 #create ground
 for tile in range(0, MAX_COLS):
-    world_data[ROWS - 1][tile] = 0
+    world_data[ROWS - 1][tile] = 8
 
 # function for outputting text onto the screen
 def draw_text(text, font, text_col, x, y):
