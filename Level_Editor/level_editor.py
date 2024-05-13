@@ -10,7 +10,7 @@ SCREEN_HEIGHT = 900
 LOWER_MARGIN = 100
 SIDE_MARGIN = 300
 
-SCREEN = pygame.display.set_mode((SCREEN_WIDTH + SIDE_MARGIN, SCREEN_HEIGHT + LOWER_MARGIN))
+SCREEN = pygame.display.set_mode((SCREEN_WIDTH + SIDE_MARGIN, SCREEN_HEIGHT + LOWER_MARGIN), pygame.FULLSCREEN)
 pygame.display.set_caption('Level Editor')
 
 

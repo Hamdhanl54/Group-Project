@@ -156,6 +156,9 @@ class Player():
 					if self.idle_index >= len(self.images_idle):
 						self.idle_index = 0
 					self.image = self.images_idle[self.idle_index]
+
+			if key [pygame.K_ESCAPE]:
+				
 				
 			
 				
