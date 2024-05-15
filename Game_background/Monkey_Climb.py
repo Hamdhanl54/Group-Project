@@ -274,8 +274,8 @@ class Player():
 		self.images_idle = []
 		self.idle_index = 0
 		self.idle_counter = 0
-		for num in range (1, 21):
-			img_idle = pygame.image.load(f'Images/Monkey/Idleing/idle_img{num}.png')
+		for num in range (0, 20):
+			img_idle = pygame.image.load(f'Images/Monkey/Idleing/{num}.png')
 			img_idle = pygame.transform.scale(img_idle, (TILE_SIZE, 60))
 			self.images_idle.append(img_idle)
 		self.image = self.images_idle[self.idle_index]
@@ -285,8 +285,8 @@ class Player():
 		self.images_left = []
 		self.index = 0
 		self.counter = 0
-		for num in range (1, 12):
-			img_left = pygame.image.load(f'Images/Monkey/Right&Left/run_img{num}.png')
+		for num in range (0, 12):
+			img_left = pygame.image.load(f'Images/Monkey/Right&Left/{num}.png')
 			img_left = pygame.transform.scale(img_left, (TILE_SIZE, 60))
 			img_right = pygame.transform.flip(img_left, True, False)
 			self.images_left.append(img_left)
@@ -402,9 +402,19 @@ while run:
 			else:
 				#restart game
 				pass
+
+	if player.rect.bottom > SCREEN_HEIGHT:
+		level -= 1
+		if path.exists(f'level{level}_data'):
+			pickle_in = open(f'level{level}_data', 'rb')
+			world_data = pickle.load(pickle_in)
+			exit_group.empty()
+			fake_exit_grounp.empty()
+			player = Player(100, SCREEN_HEIGHT - 130)
+		world = World(world_data)
+		
 		
 			
-		
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			run = False
