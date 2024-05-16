@@ -17,13 +17,14 @@ pygame.display.set_caption('Platformer')
 TILE_SIZE = 50
 game_over = 0
 MAIN_MENU = True
+OBJ_MENU = True
 level = 1
 max_levels = 10
 TITLE = 'MONEY CLIMB'
 CLOCK = pygame.time.Clock()
 start_time = pygame.time.get_ticks()
 FONT = pygame.font.SysFont('font.ttf', 20)
-FPS = 50
+FPS = 60
 timer = 0 
 timer_text = 'Time: 0'
 
@@ -34,6 +35,9 @@ MENU_IMG = pygame.image.load('Images/Monkey_Climb.jpeg')
 MIR = (1400, 900)
 MENU_IMG = pygame.transform.scale(MENU_IMG, MIR)
 
+OBJ_IMG = pygame.image.load('Images/Objective.jpg')
+OIR = (1400, 900)
+OJB_IMG = pygame.transform.scale(OBJ_IMG, OIR)
 
 # ----- BUTTONS -----
 START_BUTTON_IMG = pygame.image.load('Images/Buttons/Start_Button.jpeg')
@@ -43,6 +47,10 @@ START_BUTTON_IMG = pygame.transform.scale(START_BUTTON_IMG, SBI_RESIZE)
 EXIT_BUTTON_IMG = pygame.image.load('Images/Buttons/Exit_Button.jpeg')
 EBI_RESIZE = (200, 100)
 EXIT_BUTTON_IMG = pygame.transform.scale(EXIT_BUTTON_IMG, EBI_RESIZE)
+
+OBJ_BUTTOM_IMG = pygame.image.load('Images/Buttons/Objective_Button.jpeg')
+OBI_RESIZE = (200, 100)
+OBJ_BUTTOM_IMG = pygame.transform.scale(OBJ_BUTTOM_IMG, OBI_RESIZE)
 
 
 # ----- LEVEL -----
@@ -169,6 +177,7 @@ class Player():
 		dy = 0
 		idle_cooldown = 3
 		right_cooldown = 3
+		jump_cooldown = 0
 
 		if game_over == 0:
 
@@ -179,6 +188,15 @@ class Player():
 			if key[pygame.K_SPACE] and self.jumped == False and self.in_air == False:
 				self.vel_y = -20
 				self.jumped = True
+				#jump animation
+				self.counter += 1
+				if self.counter > jump_cooldown:
+					self.counter = 0
+					self.index += 1
+					if self.index >=len(self.images_jump):
+						self.index = 0
+						
+
 		
 			if key[pygame.K_SPACE] == False:
 				self.jumped = False
@@ -227,15 +245,10 @@ class Player():
 						self.idle_index = 0
 					self.image = self.images_idle[self.idle_index]
 
-			if key [pygame.K_ESCAPE]:
-				pause = True
-				
-			
-				
 			#add gravity 
 			self.vel_y += 1
-			if self.vel_y > 12:
-				self.vel_y = 12
+			if self.vel_y > 10:
+				self.vel_y = 10
 			dy += self.vel_y
 			
 			#check for collision
@@ -274,7 +287,7 @@ class Player():
 		self.images_idle = []
 		self.idle_index = 0
 		self.idle_counter = 0
-		for num in range (0, 20):
+		for num in range (0, 158):
 			img_idle = pygame.image.load(f'Images/Monkey/Idleing/{num}.png')
 			img_idle = pygame.transform.scale(img_idle, (TILE_SIZE, 60))
 			self.images_idle.append(img_idle)
@@ -292,6 +305,16 @@ class Player():
 			self.images_left.append(img_left)
 			self.images_right.append(img_right)
 		self.image = self.images_right[self.index]
+
+		#Jumping animation
+		self.images_jump = []
+		self.jump_index = 0
+		self.jump_counter = 0
+		for num in range (0, 7):
+			img_jump = pygame.image.load(f'Images/Monkey/Jumping/{num}.png')
+			img_jump = pygame.transform.scale(img_jump, (TILE_SIZE, 60))
+			self.images_jump.append(img_jump)
+		self.image = self.images_jump[self.index]
 		
 		self.rect = self.image.get_rect()
 		self.rect.x = x
@@ -356,23 +379,28 @@ if path.exists(f'level{level}_data'):
 world = World(world_data)
 
 #BUTTON
-start_button = Button(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 150, START_BUTTON_IMG)
+start_button = Button(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2, START_BUTTON_IMG)
 exit_button = Button(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 300, EXIT_BUTTON_IMG)
+obj_button = Button(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 150, OBJ_BUTTOM_IMG)
+
 
 
 run = True
 while run:
 
 	CLOCK.tick(FPS)
-	
-	if MAIN_MENU == True:
+	if MAIN_MENU:
 		SCREEN.blit(MENU_IMG, (0, 0))
 
 		if exit_button.draw():
 			run = False
 
 		if start_button.draw():
-			MAIN_MENU = False
+			if obj_button.draw() == False:
+				MAIN_MENU = False
+		
+		if obj_button.draw():	
+			SCREEN.blit(OBJ_IMG, (0, 0))
 
 	else:
 		SCREEN.blit(LVL_BG_IMG, (0, 0))
@@ -382,6 +410,7 @@ while run:
 		fake_exit_grounp.draw(SCREEN)
 		fake_exit_grounp.draw(SCREEN)
 		game_over = player.update(game_over)
+		
 		# Update timer
 		timer += CLOCK.get_time() / 1000  # Convert milliseconds to seconds
 		timer_text = f"Level #{level}     Time: {int(timer)}s"  # Update timer text
@@ -410,8 +439,8 @@ while run:
 			world_data = pickle.load(pickle_in)
 			exit_group.empty()
 			fake_exit_grounp.empty()
-			player = Player(100, SCREEN_HEIGHT - 130)
 		world = World(world_data)
+		player.rect.y = player.rect.y - (SCREEN_HEIGHT + player.rect.height)
 		
 		
 			
