@@ -10,7 +10,7 @@ pygame.init()
 SCREEN_WIDTH = 1400
 SCREEN_HEIGHT = 900
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
-pygame.display.set_caption('Platformer')
+pygame.display.set_caption('Monkey Climb')
 
 
 # ------------------------------------------------------ VARIABLES ------------------------------------------------------
@@ -18,15 +18,14 @@ TILE_SIZE = 50
 game_over = 0
 MAIN_MENU = True
 OBJ_MENU = True
-level = 1
-max_levels = 10
+PAUSE_MENU = False
+menu_state = "Main"
+level = 7
+max_levels = 7
 TITLE = 'MONEY CLIMB'
 CLOCK = pygame.time.Clock()
-start_time = pygame.time.get_ticks()
 FONT = pygame.font.SysFont('font.ttf', 20)
 FPS = 60
-timer = 0 
-timer_text = 'Time: 0'
 
 
 # ------------------------------------------------------ IMAGES ------------------------------------------------------
@@ -37,7 +36,8 @@ MENU_IMG = pygame.transform.scale(MENU_IMG, MIR)
 
 OBJ_IMG = pygame.image.load('Images/Objective.jpg')
 OIR = (1400, 900)
-OJB_IMG = pygame.transform.scale(OBJ_IMG, OIR)
+OBJ_IMG = pygame.transform.scale(OBJ_IMG, OIR)
+
 
 # ----- BUTTONS -----
 START_BUTTON_IMG = pygame.image.load('Images/Buttons/Start_Button.jpeg')
@@ -48,9 +48,21 @@ EXIT_BUTTON_IMG = pygame.image.load('Images/Buttons/Exit_Button.jpeg')
 EBI_RESIZE = (200, 100)
 EXIT_BUTTON_IMG = pygame.transform.scale(EXIT_BUTTON_IMG, EBI_RESIZE)
 
-OBJ_BUTTOM_IMG = pygame.image.load('Images/Buttons/Objective_Button.jpeg')
+OBJ_BUTTON_IMG = pygame.image.load('Images/Buttons/Objective_Button.jpeg')
 OBI_RESIZE = (200, 100)
-OBJ_BUTTOM_IMG = pygame.transform.scale(OBJ_BUTTOM_IMG, OBI_RESIZE)
+OBJ_BUTTON_IMG = pygame.transform.scale(OBJ_BUTTON_IMG, OBI_RESIZE)
+
+BACK_BUTTON_IMG = pygame.image.load('Images/Buttons/BACK_BUTTON.png')
+BBI_RESIZE = (200, 100)
+BACK_BUTTON_IMG = pygame.transform.scale(BACK_BUTTON_IMG, BBI_RESIZE)
+
+RESUME_BUTTON_IMG = pygame.image.load('Images/Buttons/Resume_Button.png')
+RBI_RESIZE = (200, 100)
+RESUME_BUTTON_IMG = pygame.transform.scale(RESUME_BUTTON_IMG, RBI_RESIZE)
+
+PAUSE_EXIT_BUTTON_IMG = pygame.image.load('Images/Buttons/Pause_Exit_Button.png')
+PEBI_RESIZE = (200, 100)
+PAUSE_EXIT_BUTTON_IMG = pygame.transform.scale(PAUSE_EXIT_BUTTON_IMG, PEBI_RESIZE)
 
 
 # ----- LEVEL -----
@@ -73,13 +85,6 @@ LADDER_IMG = pygame.image.load('Images/LEVEL_ASSETS/Ladder_asset.png')
 FAKE_CENTER = pygame.image.load('Images/LEVEL_ASSETS/Center_branch_asset.jpg')
 
 FAKE_LADDER = pygame.image.load('Images/LEVEL_ASSETS/Ladder_asset.png')
-
-
-
-def draw_grid():
-	for line in range(0, 29):
-		pygame.draw.line(SCREEN, (255, 255, 255), (0, line * TILE_SIZE), (SCREEN_WIDTH, line * TILE_SIZE))
-		pygame.draw.line(SCREEN, (255, 255, 255), (line * TILE_SIZE, 0), (line * TILE_SIZE, SCREEN_HEIGHT))
 
 
 # ------------------------------------------------------ FUNCTIONS ------------------------------------------------------
@@ -381,70 +386,85 @@ world = World(world_data)
 #BUTTON
 start_button = Button(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2, START_BUTTON_IMG)
 exit_button = Button(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 300, EXIT_BUTTON_IMG)
-obj_button = Button(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 150, OBJ_BUTTOM_IMG)
-
+obj_button = Button(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 150, OBJ_BUTTON_IMG)
+back_button = Button(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT - 150, BACK_BUTTON_IMG)
+resume_button = Button(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 - 150, RESUME_BUTTON_IMG)
+pause_exit_button = Button(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2, PAUSE_EXIT_BUTTON_IMG)
 
 
 run = True
 while run:
 
 	CLOCK.tick(FPS)
-	if MAIN_MENU:
-		SCREEN.blit(MENU_IMG, (0, 0))
+	
+	if menu_state == "Objective":
+		SCREEN.blit(OBJ_IMG, (0,0))
+		MAIN_MENU = False
+		
+		if back_button.draw():
+			menu_state = 'Main'
+			MAIN_MENU = True
 
-		if exit_button.draw():
-			run = False
+	if menu_state == 'Main':
+		if MAIN_MENU:
+			SCREEN.blit(MENU_IMG, (0, 0))
 
-		if start_button.draw():
-			if obj_button.draw() == False:
+			if exit_button.draw():
+				run = False
+
+			if start_button.draw():
 				MAIN_MENU = False
+			
+			if obj_button.draw():
+				menu_state = "Objective"
 		
-		if obj_button.draw():	
-			SCREEN.blit(OBJ_IMG, (0, 0))
 
-	else:
-		SCREEN.blit(LVL_BG_IMG, (0, 0))
-		world.draw()
-		player.update(game_over)
-		exit_group.draw(SCREEN)
-		fake_exit_grounp.draw(SCREEN)
-		fake_exit_grounp.draw(SCREEN)
-		game_over = player.update(game_over)
-		
-		# Update timer
-		timer += CLOCK.get_time() / 1000  # Convert milliseconds to seconds
-		timer_text = f"Level #{level}     Time: {int(timer)}s"  # Update timer text
-
-		# Update screen caption with timer text
-		pygame.display.set_caption(timer_text)
-
-		#if player has completed level
-		if game_over == 1:
-			#reset game and go to next level
-			level += 1
-			if level <= max_levels:
-				#reset level
-				world_data = []
-				world = reset_level(level)
-				game_over = 0
-				pygame.display.set_caption(f'level #{level}')
+		else:
+			if PAUSE_MENU == True:
+				if resume_button.draw():
+					PAUSE_MENU = False
+				elif pause_exit_button.draw():
+					run = False
 			else:
-				#restart game
-				pass
+				SCREEN.blit(LVL_BG_IMG, (0, 0))
+				world.draw()
+				player.update(game_over)
+				exit_group.draw(SCREEN)
+				fake_exit_grounp.draw(SCREEN)
+				fake_exit_grounp.draw(SCREEN)
+				game_over = player.update(game_over)
 
-	if player.rect.bottom > SCREEN_HEIGHT:
-		level -= 1
-		if path.exists(f'level{level}_data'):
-			pickle_in = open(f'level{level}_data', 'rb')
-			world_data = pickle.load(pickle_in)
-			exit_group.empty()
-			fake_exit_grounp.empty()
-		world = World(world_data)
-		player.rect.y = player.rect.y - (SCREEN_HEIGHT + player.rect.height)
+
+				#if player has completed level
+				if game_over == 1:
+					#reset game and go to next level
+					level += 1
+					if level <= max_levels:
+						#reset level
+						world_data = []
+						world = reset_level(level)
+						game_over = 0
+						pygame.display.set_caption(f'level #{level}')
+					else:
+						#restart game
+						pass
+
+			if player.rect.bottom > SCREEN_HEIGHT:
+				level -= 1
+				if path.exists(f'level{level}_data'):
+					pickle_in = open(f'level{level}_data', 'rb')
+					world_data = pickle.load(pickle_in)
+					exit_group.empty()
+					fake_exit_grounp.empty()
+				world = World(world_data)
+				player.rect.y = player.rect.y - (SCREEN_HEIGHT + player.rect.height)
 		
 		
 			
 	for event in pygame.event.get():
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_ESCAPE:
+				PAUSE_MENU = True
 		if event.type == pygame.QUIT:
 			run = False
 
