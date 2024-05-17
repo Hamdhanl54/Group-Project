@@ -38,6 +38,7 @@ OBJ_IMG = pygame.image.load('Images/Objective.jpg')
 OIR = (1400, 900)
 OBJ_IMG = pygame.transform.scale(OBJ_IMG, OIR)
 
+
 # ----- BUTTONS -----
 START_BUTTON_IMG = pygame.image.load('Images/Buttons/Start_Button.jpeg')
 SBI_RESIZE = (200, 100)
@@ -399,8 +400,10 @@ while run:
 	if menu_state == "Objective":
 		SCREEN.blit(OBJ_IMG, (0,0))
 		MAIN_MENU = False
+		
 		if back_button.draw():
-			menu_state == 'Main'
+			menu_state = 'Main'
+			MAIN_MENU = True
 
 	if menu_state == 'Main':
 		if MAIN_MENU:
